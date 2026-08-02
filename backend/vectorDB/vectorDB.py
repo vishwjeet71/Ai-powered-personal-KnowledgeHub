@@ -1,13 +1,21 @@
 import lancedb
+from langchain_core.documents import Document
+from backend.vectorDB.secret import load_secrets
 
 lancedb_object = lancedb.connect("./backend/vectorDB/vector_db")
 
 # Listing operation
 def list_documents():
-    return lancedb_object.open_table("knowledge_base")
+    try:
+        table = lancedb_object.open_table("knowledge_base")
+        return table
+    
+    except ValueError:
+        return None 
+
 
 # search operation
-def build_query(file_type=None, file_name=None, source=None):
+def build_query(file_type=None, file_name=None, source=None, update_by_user=None):
     conditions = []
 
     if file_type is not None:
@@ -19,11 +27,18 @@ def build_query(file_type=None, file_name=None, source=None):
     if source is not None:
         conditions.append(f"metadata.source = '{source}'")
 
+    if update_by_user is not None:
+        conditions.append(f"metadata.update_by_user = '{update_by_user}'")
+
     return " AND ".join(conditions)
+
 
 def search_document_through_metadata(*args, **kwargs):
     query = build_query(*args, **kwargs)
     table = list_documents()
+
+    if not table:
+        return 404
 
     try:
         matching_docs = (
@@ -41,7 +56,7 @@ def search_document_through_metadata(*args, **kwargs):
         return 422
     
     except Exception as e:
-        print(f"[Error]; An unexpected error occurred while filtering documents: {e}") #  Something went wrong while filtering the documents. Please try again.
+        print(f"[Error]; An unexpected error occurred while filtering documents: {e}") 
         return None
     
 
@@ -50,6 +65,9 @@ def delete_document(
         ids: list[str]
 ):
     table = list_documents()
+
+    if not table:
+        return 404
 
     if not table.search().to_list():
         return 404
@@ -74,5 +92,42 @@ def delete_document(
 
 
 # updating document
-def update_document():
-    pass
+def update_document(id: str, update_content: str):
+
+    _ , embedding_model = load_secrets()
+
+    if not embedding_model:
+        return 503
+
+    table = list_documents()
+
+    if not table:
+        return None
+    
+    else:
+        try:
+            existing_docs = table.search().where(f"id = '{id}'").to_list()
+
+            if len(existing_docs) == 1:
+                existing_metadata = existing_docs[0].get('metadata', {})
+                existing_metadata['update_by_user'] = "Y"
+
+                updated_record = {
+                    "id": id,
+                    "vector": embedding_model.embed_query(update_content),
+                    "text": update_content,
+                    "metadata": existing_metadata
+                }
+
+                table.merge_insert(on="id").when_matched_update_all().execute([updated_record])
+                return 'done'
+            
+            elif len(existing_docs) == 0:
+                return 404 
+
+            else:
+                return 409 
+            
+        except Exception as e:
+            print(f"[Error]: An unexpected error occurred while Updating document: {e}")
+            return 500

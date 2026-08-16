@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Personal KnowledgeHub</title>
+<meta name="description" content="Ask questions grounded in your own documents.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='14' fill='%234B4593'/%3E%3Ctext x='24' y='33' font-family='Georgia,serif' font-size='24' fill='%23fff' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,400;8..144,500;8..144,600;8..144,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..600,0..1,-25..200" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<div id="app">
+
+  <!-- ===================== TOP APP BAR ===================== -->
+  <header class="top-bar">
+    <div class="top-bar__identity">
+      <span class="top-bar__mark" aria-hidden="true"></span>
+      <div class="top-bar__titles">
+        <h1 class="top-bar__title">KnowledgeHub</h1>
+        <p class="top-bar__subtitle" id="topSubtitle">Grounded answers from your library</p>
+      </div>
+    </div>
+    <div class="top-bar__actions">
+      <button class="icon-btn health-pill" id="healthPill" type="button" aria-label="System status" data-tooltip="System status">
+        <span class="health-pill__dot" id="healthDot"></span>
+        <span class="health-pill__label" id="healthLabel">Checking…</span>
+      </button>
+      <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle dark theme">
+        <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== NAVIGATION ===================== -->
+  <nav class="app-nav" id="appNav" aria-label="Primary">
+    <button class="nav-item is-active" data-view="chat" type="button">
+      <span class="nav-item__icon">
+        <span class="material-symbols-outlined">chat_bubble</span>
+      </span>
+      <span class="nav-item__label">Chat</span>
+    </button>
+    <button class="nav-item" data-view="library" type="button">
+      <span class="nav-item__icon">
+        <span class="material-symbols-outlined">folder_open</span>
+        <span class="nav-item__badge" id="libraryBadge" hidden>0</span>
+      </span>
+      <span class="nav-item__label">Library</span>
+    </button>
+    <button class="nav-item" data-view="settings" type="button">
+      <span class="nav-item__icon">
+        <span class="material-symbols-outlined">tune</span>
+      </span>
+      <span class="nav-item__label">Settings</span>
+    </button>
+  </nav>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <!-- ---------- CHAT VIEW ---------- -->
+    <section class="view is-active" id="view-chat" data-view="chat">
+      <div class="chat-scroll" id="chatScroll">
+        <div class="empty-state" id="chatEmpty">
+          <div class="blob-avatar blob-avatar--hero" aria-hidden="true"></div>
+          <h2 class="empty-state__headline">Ask your library anything</h2>
+          <p class="empty-state__body">Every answer here is pulled from documents you've added, not guessed from thin air. Add a source in Library, then ask a question.</p>
+          <p class="empty-state__note">Heads up — each question starts a fresh conversation with the agent; it doesn't carry earlier turns as context yet.</p>
+        </div>
+        <div class="chat-thread" id="chatThread" role="log" aria-live="polite"></div>
+      </div>
+
+      <form class="composer" id="composerForm" autocomplete="off">
+        <div class="composer__field">
+          <textarea
+            id="chatInput"
+            class="composer__input"
+            placeholder="Ask something grounded in your documents…"
+            rows="1"
+            maxlength="4000"
+            required></textarea>
+        </div>
+        <button class="fab fab--send" id="sendBtn" type="submit" aria-label="Send question">
+          <span class="material-symbols-outlined">arrow_upward</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- ---------- LIBRARY VIEW ---------- -->
+    <section class="view" id="view-library" data-view="library">
+      <div class="library-toolbar">
+        <div class="search-field">
+          <span class="material-symbols-outlined search-field__icon">search</span>
+          <input type="text" id="searchInput" class="search-field__input" placeholder="Search by file name…">
+          <button class="icon-btn icon-btn--sm" id="clearSearch" type="button" aria-label="Clear search" hidden>
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <button class="icon-btn" id="refreshLibrary" type="button" aria-label="Refresh library" data-tooltip="Refresh">
+          <span class="material-symbols-outlined">refresh</span>
+        </button>
+        <button class="icon-btn" id="selectModeToggle" type="button" aria-label="Select multiple" data-tooltip="Select multiple">
+          <span class="material-symbols-outlined">checklist</span>
+        </button>
+      </div>
+
+      <div class="chip-row" id="typeChipRow">
+        <button class="chip is-selected" data-filter-type="" type="button">All</button>
+      </div>
+
+      <div class="chip-row chip-row--filters">
+        <label class="filter-select">
+          <span class="material-symbols-outlined">description</span>
+          <select id="sourceFilter">
+            <option value="">Any source</option>
+            <option value="local">Local</option>
+            <option value="pdf">PDF</option>
+            <option value="doc">DOC</option>
+            <option value="docx">DOCX</option>
+            <option value="web">Web</option>
+          </select>
+        </label>
+        <label class="filter-select">
+          <span class="material-symbols-outlined">edit_note</span>
+          <select id="editedFilter">
+            <option value="">User-edited: any</option>
+            <option value="Y">Edited by you</option>
+            <option value="N">Original</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="selection-bar" id="selectionBar" hidden>
+        <span id="selectionCount">0 selected</span>
+        <div class="selection-bar__actions">
+          <button class="text-btn" id="selectionCancel" type="button">Cancel</button>
+          <button class="text-btn text-btn--danger" id="selectionDelete" type="button">Delete</button>
+        </div>
+      </div>
+
+      <div class="doc-list" id="docList">
+        <div class="skeleton-list" id="docSkeleton">
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+          <div class="skeleton-card"></div>
+        </div>
+        <div class="empty-state empty-state--compact" id="libraryEmpty" hidden>
+          <span class="material-symbols-outlined empty-state__icon">inventory_2</span>
+          <h2 class="empty-state__headline">Your library is empty</h2>
+          <p class="empty-state__body">Add a local file path or a URL and the agent will start grounding answers in it.</p>
+        </div>
+      </div>
+
+      <button class="fab fab--library" id="addDocFab" type="button" aria-label="Add source">
+        <span class="material-symbols-outlined">add</span>
+        <span class="fab__label">Add source</span>
+      </button>
+    </section>
+
+    <!-- ---------- SETTINGS VIEW ---------- -->
+    <section class="view" id="view-settings" data-view="settings">
+      <div class="settings-scroll">
+
+        <section class="card status-card">
+          <h2 class="card__title">System status</h2>
+          <p class="card__subtitle">Live read of what's currently loaded on the server.</p>
+          <ul class="status-list" id="statusList">
+            <li class="status-row" data-key="chat_model"><span class="status-row__dot"></span><span class="status-row__label">Chat model</span><span class="status-row__state">—</span></li>
+            <li class="status-row" data-key="embedding_model"><span class="status-row__dot"></span><span class="status-row__label">Embedding model</span><span class="status-row__state">—</span></li>
+            <li class="status-row" data-key="vectordb"><span class="status-row__dot"></span><span class="status-row__label">Vector database</span><span class="status-row__state">—</span></li>
+            <li class="status-row" data-key="agent"><span class="status-row__dot"></span><span class="status-row__label">Retrieval agent</span><span class="status-row__state">—</span></li>
+          </ul>
+          <button class="tonal-btn" id="refreshHealth" type="button">
+            <span class="material-symbols-outlined">refresh</span> Refresh status
+          </button>
+        </section>
+
+        <section class="card">
+          <h2 class="card__title">Model provider</h2>
+          <p class="card__subtitle">Your key is sent once to the server and stored there as a local secret file — it never touches this browser's storage.</p>
+
+          <form id="secretForm">
+            <div class="radio-group" role="radiogroup" aria-label="API provider">
+              <label class="radio-tile">
+                <input type="radio" name="api_provider" value="google" checked>
+                <span class="radio-tile__mark"></span>
+                <span class="radio-tile__text">
+                  <strong>Google</strong>
+                  <small>Gemini chat + embeddings</small>
+                </span>
+              </label>
+              <label class="radio-tile">
+                <input type="radio" name="api_provider" value="openai">
+                <span class="radio-tile__mark"></span>
+                <span class="radio-tile__text">
+                  <strong>OpenAI</strong>
+                  <small>GPT chat + embeddings</small>
+                </span>
+              </label>
+              <label class="radio-tile">
+                <input type="radio" name="api_provider" value="openCompatible">
+                <span class="radio-tile__mark"></span>
+                <span class="radio-tile__text">
+                  <strong>OpenAI-compatible</strong>
+                  <small>Custom base URL, e.g. a local server</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="text-field">
+              <input type="password" id="apiKey" required placeholder=" ">
+              <label for="apiKey">API key</label>
+              <button class="icon-btn icon-btn--sm text-field__trailing" id="toggleKeyVisibility" type="button" aria-label="Show API key">
+                <span class="material-symbols-outlined">visibility</span>
+              </button>
+            </div>
+
+            <div class="text-field" id="baseUrlField" hidden>
+              <input type="url" id="baseUrl" placeholder=" ">
+              <label for="baseUrl">Base URL</label>
+            </div>
+
+            <div class="field-row">
+              <div class="text-field">
+                <input type="text" id="chatModelName" placeholder=" ">
+                <label for="chatModelName">Chat model name (optional)</label>
+              </div>
+              <div class="text-field">
+                <input type="text" id="embdModelName" placeholder=" ">
+                <label for="embdModelName">Embedding model name (optional)</label>
+              </div>
+            </div>
+
+            <div class="settings-actions">
+              <button class="filled-btn" type="submit" id="saveSecretBtn">
+                <span class="material-symbols-outlined">key</span> Save & connect
+              </button>
+              <button class="outlined-btn outlined-btn--danger" type="button" id="removeSecretBtn">
+                <span class="material-symbols-outlined">link_off</span> Disconnect
+              </button>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== ADD DOCUMENT DIALOG ===================== -->
+<div class="sheet" id="addDocSheet" hidden>
+  <div class="sheet__grabber" aria-hidden="true"></div>
+  <h2 class="sheet__title">Add a source</h2>
+  <p class="sheet__body">Give the server a path or URL it can already reach. Supported: <code>.pdf</code>, <code>.doc</code>, <code>.docx</code>, <code>.txt</code>, <code>.html</code>. This doesn't upload a file from your browser — the path has to exist on the machine running the backend.</p>
+  <div class="text-field">
+    <input type="text" id="addDocPath" placeholder=" " autocomplete="off">
+    <label for="addDocPath">File path or URL</label>
+  </div>
+  <div class="sheet__actions">
+    <button class="text-btn" id="addDocCancel" type="button">Cancel</button>
+    <button class="filled-btn" id="addDocConfirm" type="button">
+      <span class="material-symbols-outlined">add_link</span> Add source
+    </button>
+  </div>
+</div>
+
+<!-- ===================== DOCUMENT DETAILS SHEET ===================== -->
+<div class="sheet sheet--wide" id="detailsSheet" hidden>
+  <div class="sheet__grabber" aria-hidden="true"></div>
+  <div class="sheet__header">
+    <h2 class="sheet__title">Document details</h2>
+    <button class="icon-btn icon-btn--sm" id="detailsClose" type="button" aria-label="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+  </div>
+  <div class="sheet__body">
+    <p class="details-id">ID · <span id="detailsId">—</span></p>
+    <div class="details-grid" id="detailsMetadata"></div>
+    <h3 class="details-subhead">Text content</h3>
+    <p class="details-text" id="detailsText"></p>
+  </div>
+</div>
+
+<!-- ===================== EDIT DOCUMENT DIALOG ===================== -->
+<div class="sheet" id="editSheet" hidden>
+  <div class="sheet__grabber" aria-hidden="true"></div>
+  <h2 class="sheet__title">Edit document text</h2>
+  <p class="sheet__body">This updates the stored content only — file name, type and source stay as they are; the backend doesn't expose an endpoint to change those.</p>
+  <div class="text-field text-field--area">
+    <textarea id="editContent" rows="8" placeholder=" "></textarea>
+    <label for="editContent">Page content</label>
+  </div>
+  <div class="sheet__actions">
+    <button class="text-btn" id="editCancel" type="button">Cancel</button>
+    <button class="filled-btn" id="editConfirm" type="button">
+      <span class="material-symbols-outlined">save</span> Save changes
+    </button>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM DELETE DIALOG ===================== -->
+<div class="dialog" id="confirmDialog" hidden>
+  <span class="material-symbols-outlined dialog__icon">delete_forever</span>
+  <h2 class="dialog__title" id="confirmTitle">Delete this document?</h2>
+  <p class="dialog__body" id="confirmBody">This removes it from the vector database. It can't be undone.</p>
+  <div class="dialog__actions">
+    <button class="text-btn" id="confirmCancel" type="button">Cancel</button>
+    <button class="text-btn text-btn--danger" id="confirmOk" type="button">Delete</button>
+  </div>
+</div>
+
+<!-- ===================== SNACKBAR ===================== -->
+<div class="snackbar-host" id="snackbarHost" aria-live="assertive"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

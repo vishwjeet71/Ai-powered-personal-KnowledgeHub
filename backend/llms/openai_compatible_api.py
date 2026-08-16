@@ -2,6 +2,8 @@ from openai import OpenAI
 from langchain_core.messages.ai import AIMessage
 from langchain_core.embeddings import Embeddings
 
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
 class _OpenAICompatibleEmbeddings(Embeddings):
     def __init__(
         self,
@@ -79,10 +81,13 @@ def openaiCompatibleEmbeddingModel(
         base_url: str,
         model_name: str
 ):
-    return _OpenAICompatibleEmbeddings(
-     api_key= api_key,
-     base_url= base_url,
-     model= model_name   
+    return OpenAIEmbeddings(
+        api_key= api_key,
+        base_url= base_url,
+        model= model_name,
+        check_embedding_ctx_length=False,
+        max_retries=2,
+        timeout= 30  
     )
 
 def openaiCompatibleChatModel(
@@ -90,8 +95,10 @@ def openaiCompatibleChatModel(
         base_url:str,
         model_name: str
 ):
-    return _OpenAICompatibleChat(
+    return ChatOpenAI(
         api_key=api_key,
         base_url= base_url,
-        model= model_name
+        model= model_name,
+        max_retries=2,
+        timeout= 30
     )

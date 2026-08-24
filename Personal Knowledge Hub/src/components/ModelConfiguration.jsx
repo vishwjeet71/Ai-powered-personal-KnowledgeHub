@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { BaseDirectory, exists, mkdir, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 
-export default function ModelConfiguration({ message, setMessage }) {
+import { useBackendContext } from "../App";
 
-    const displayTime = 3000;
+export default function ModelConfiguration({ setDisplayMessage }) {
 
+    const displayTime = 5000;
+    const { setBackendStatus } = useBackendContext();
     const [formData, setFormData] = useState({
-        api_provider: "openai", // Default checked value
+        api_provider: "openai",
         api_key: "",
         base_url: "",
         chat_model_name: "",
@@ -50,13 +52,19 @@ export default function ModelConfiguration({ message, setMessage }) {
                 }
             );
 
-            setMessage("File written successfully!");
-            setTimeout(() => setMessage(""), displayTime)
+            setDisplayMessage("File written successfully!");
+            setTimeout(() => setDisplayMessage(""), displayTime)
+
+            // load models request
+            makeLoadRequest(
+                { setDisplayMessage, setBackendStatus }
+            );
 
         } catch (error) {
-            console.error("Failed to write file:", error);
-            setMessage("Failed to write file.");
-            setTimeout(() => setMessage(""), displayTime)
+
+            console.error("failed to write file:", error);
+            setDisplayMessage("failed to write file.");
+            setTimeout(() => setDisplayMessage(""), displayTime);
         }
     };
 
@@ -78,17 +86,25 @@ export default function ModelConfiguration({ message, setMessage }) {
                 });
 
                 // success message for 3 seconds
-                setMessage("File deleted successfully!");
-                setTimeout(() => setMessage(""), displayTime);
+                setDisplayMessage("File deleted successfully!");
+                setTimeout(() => setDisplayMessage(""), displayTime);
+
             } else {
                 // "not found" message for 3 seconds
-                setMessage("File does not exist.");
-                setTimeout(() => setMessage(""), displayTime);
+                setDisplayMessage("File does not exist.");
+                setTimeout(() => setDisplayMessage(""), displayTime);
             }
+
+            // load model request
+            makeLoadRequest(
+                { setDisplayMessage, setBackendStatus }
+            );
+
         } catch (error) {
-            console.error("Failed to remove secret file:", error);
-            setMessage("Failed to delete file.");
-            setTimeout(() => setMessage(""), displayTime);
+
+            console.error("failed to remove secret file:", error);
+            setDisplayMessage("failed to delete file.");
+            setTimeout(() => setDisplayMessage(""), displayTime);
         }
     };
 
@@ -199,3 +215,47 @@ export default function ModelConfiguration({ message, setMessage }) {
         </>
     );
 }
+
+const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
+    try {
+        const response = await fetch("http://localhost:8000/load-models");
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            setBackendStatus(ps => ({
+                ...ps,
+                models: "failed"
+            }));
+
+            console.error(responseData.CM);
+            setDisplayMessage(responseData.UM);
+
+            setTimeout(() => setDisplayMessage(""), 5000);
+
+            return;
+        }
+
+        setBackendStatus(ps => ({
+            ...ps,
+            models: ""
+        }));
+
+        console.log(responseData.CM);
+        setDisplayMessage(responseData.UM);
+
+        setTimeout(() => setDisplayMessage(""), 5000);
+
+    } catch (error) {
+        setBackendStatus(ps => ({
+            ...ps,
+            models: "failed"
+        }));
+
+        console.error(`Unable to load model! ${error}`);
+
+        setDisplayMessage("Unable to load models.");
+
+        setTimeout(() => setDisplayMessage(""), 5000);
+    }
+};

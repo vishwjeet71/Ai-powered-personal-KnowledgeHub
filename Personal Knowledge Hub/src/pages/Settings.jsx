@@ -4,13 +4,13 @@ import { useState } from "react";
 import ModelConfiguration from "../components/ModelConfiguration";
 
 export default function Settings() {
-    const [message, setMessage] = useState("");
+    const [displayMessage, setDisplayMessage] = useState("");
 
     return (
         <>
             <div>
-                <ModelConfiguration message={message} setMessage={setMessage} />
-                <div>{message}</div>
+                <ModelConfiguration setDisplayMessage= {setDisplayMessage} />
+                <div>{displayMessage}</div>
             </div>
         </>
     )

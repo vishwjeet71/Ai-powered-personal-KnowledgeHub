@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { BaseDirectory, exists, mkdir, remove, writeTextFile } from "@tauri-apps/plugin-fs";
 
-import { useBackendContext } from "../App";
+import { useProjectContext } from "../App";
 
-export default function ModelConfiguration({ setDisplayMessage }) {
+export default function ModelConfiguration() {
 
     const displayTime = 5000;
-    const { setBackendStatus } = useBackendContext();
+    const { setBackendStatus, setDisplayMessage} = useProjectContext();
     const [formData, setFormData] = useState({
         api_provider: "openai",
         api_key: "",
@@ -225,7 +225,7 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
         if (!response.ok) {
             setBackendStatus(ps => ({
                 ...ps,
-                models: "failed"
+                models: false
             }));
 
             console.error(responseData.CM);
@@ -238,7 +238,7 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
 
         setBackendStatus(ps => ({
             ...ps,
-            models: ""
+            models: true
         }));
 
         console.log(responseData.CM);
@@ -249,7 +249,7 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
     } catch (error) {
         setBackendStatus(ps => ({
             ...ps,
-            models: "failed"
+            models: false
         }));
 
         console.error(`Unable to load model! ${error}`);

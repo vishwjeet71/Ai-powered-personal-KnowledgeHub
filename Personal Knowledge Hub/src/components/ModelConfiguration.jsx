@@ -225,7 +225,8 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
         if (!response.ok) {
             setBackendStatus(ps => ({
                 ...ps,
-                models: false
+                models: false,
+                vectorDB: false
             }));
 
             console.error(responseData.CM);
@@ -238,7 +239,8 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
 
         setBackendStatus(ps => ({
             ...ps,
-            models: true
+            models: true,
+            vectorDB: true
         }));
 
         console.log(responseData.CM);
@@ -249,7 +251,8 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
     } catch (error) {
         setBackendStatus(ps => ({
             ...ps,
-            models: false
+            models: false,
+            vectorDB: false
         }));
 
         console.error(`Unable to load model! ${error}`);

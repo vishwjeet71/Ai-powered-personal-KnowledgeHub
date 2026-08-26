@@ -3,7 +3,7 @@ import { useProjectContext } from "../App";
 
 export default function BackendError() {
     const { backendStatus, setBackendStatus } = useProjectContext();
-    
+
     const retryCount = useRef(0);
 
     const makeHelthCheckRequest = async () => {
@@ -23,13 +23,18 @@ export default function BackendError() {
                 backend: responseData.backend,
                 models: responseData.models,
                 vectorDB: responseData.vectorDB
-            }); 
+            });
         } catch (error) {
             if (retryCount.current < 3) {
                 retryCount.current += 1;
                 setTimeout(makeHelthCheckRequest, 5000);
 
             } else {
+                setBackendStatus({
+                    backend: false,
+                    models: false,
+                    vectorDB: false
+                });
                 console.log("Max retries reached. Waiting for next 30s interval.");
             }
         }

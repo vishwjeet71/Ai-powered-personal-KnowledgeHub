@@ -26,8 +26,16 @@ export default function KnowledgeBase() {
                         console.log(console_message);
                         setStatusMessage("");
 
-                        setUserDocuments(pd => [...pd, ...user_message.page_data]);
+                        if (pageNo === 1) {
+                            setUserDocuments(user_message.page_data);
+                        } else {
+                            setUserDocuments(pd => [
+                                ...pd,
+                                ...user_message.page_data
+                            ]);
+                        }
                         setLoadMore(user_message.load_more);
+
                     } else {
                         setStatusMessage(user_message);
                         console.log(console_message);

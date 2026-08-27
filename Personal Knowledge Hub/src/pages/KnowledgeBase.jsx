@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { DocumentCard } from "../components/DocumentCard";
 
 export default function KnowledgeBase() {
-    const [pageContent, setPageContent] = useState("Loading...");
+    const [userDocuments, setUserDocuments] = useState([]);
+    const [statusMessage, setStatusMessage] = useState("Loading..."); // Used for text messages
     const [pageNo, setPageNo] = useState(1);
+    const [loadMore, setLoadMore] = useState(false);
 
     useEffect(() => {
-        const featchDocuments = async () => {
+        const fetchDocuments = async () => {
             try {
                 const response = await fetch(`http://localhost:8000/get_documents?pageNo=${pageNo}`, {
                     method: "POST",
@@ -20,26 +23,52 @@ export default function KnowledgeBase() {
                     const user_message = page_content.UM;
 
                     if (user_message?.constructor === Object) {
-                        setPageContent("Content load successfully!");
                         console.log(console_message);
+                        setStatusMessage("");
+
+                        setUserDocuments(pd => [...pd, ...user_message.page_data]);
+                        setLoadMore(user_message.load_more);
                     } else {
-                        setPageContent(user_message);
+                        setStatusMessage(user_message);
                         console.log(console_message);
                     }
                 }
             } catch (error) {
-                setPageContent("Failed to load Documents");
+                setStatusMessage("Failed to load Documents");
                 console.error(`Loading Document failed ${error}`);
             }
         };
 
-        featchDocuments();
+        fetchDocuments();
     }, [pageNo]);
 
     return (
         <>
             <h2>Hello from KnowledgeBase!</h2>
-            {pageContent}
+
+            {statusMessage && <div>{statusMessage}</div>}
+
+            <div>
+                {userDocuments.map((doc) => (
+                    <DocumentCard
+                        key={doc.id}
+                        id={doc.id}
+                        text={doc.text}
+                        source={doc.metadata?.file_type}
+                        file_name={doc.metadata?.file_name}
+                    />
+                ))}
+            </div>
+
+            {loadMore && (
+                <button onClick={() => loadAnotherPage(setPageNo)}>
+                    Load More
+                </button>
+            )}
         </>
     );
 }
+
+const loadAnotherPage = (setPageNo) => {
+    setPageNo(prevPageNo => prevPageNo + 1);
+};

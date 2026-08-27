@@ -11,7 +11,7 @@ from langchain_community.vectorstores import LanceDB
 from langchain_community.tools import tool
 
 # moduls
-from vectorDB.vectorDB import lancedb_object
+from vectorDB.vectorDB import lancedb_object, get_page_data
 from llms.model_handler import load_models
 from llms.agent import get_Agent, get_agent_output
 from documentLoaders.file_loader import load_document_file
@@ -247,8 +247,8 @@ async def get_health():
         ),
     }
 
-
+@app.post("/get_documents")
 async def list_documents(
-        pageNo: int, response: Response
+        pageNo: int
 ):
-    pass
+    return get_page_data(pageNo)

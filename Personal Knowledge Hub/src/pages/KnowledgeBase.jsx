@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { DocumentCard } from "../components/DocumentCard";
+import AddDocuments from "../components/AddDocuments";
 
 export default function KnowledgeBase() {
     const [userDocuments, setUserDocuments] = useState([]);
     const [statusMessage, setStatusMessage] = useState("Loading..."); // Used for text messages
     const [pageNo, setPageNo] = useState(1);
     const [loadMore, setLoadMore] = useState(false);
+
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -48,7 +51,9 @@ export default function KnowledgeBase() {
         };
 
         fetchDocuments();
-    }, [pageNo]);
+    }, [pageNo, refreshKey]);
+
+    const refreshDocuments = () => { setRefreshKey(prev => prev + 1); };
 
     return (
         <>
@@ -73,6 +78,9 @@ export default function KnowledgeBase() {
                     Load More
                 </button>
             )}
+            <div>
+                <AddDocuments onDocumentAdded={refreshDocuments} />
+            </div>
         </>
     );
 }

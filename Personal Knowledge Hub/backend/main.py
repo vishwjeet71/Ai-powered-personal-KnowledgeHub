@@ -11,7 +11,7 @@ from langchain_community.vectorstores import LanceDB
 from langchain_community.tools import tool
 
 # moduls
-from vectorDB.vectorDB import lancedb_object, get_page_data
+from vectorDB.vectorDB import lancedb_object, get_page_data, delete_document
 from llms.model_handler import load_models
 from llms.agent import get_Agent, get_agent_output
 from documentLoaders.file_loader import load_document_file
@@ -92,6 +92,10 @@ class Chat(BaseModel):
     query: str
 
 
+class DeleteRequest(BaseModel):
+    ids: list[str]
+
+
 @app.get("/load-models")
 async def loadModels(response: Response):
     config_loc = user_config_dir(appname="com.vishwjeet.personal-knowledge-hub")
@@ -119,18 +123,18 @@ async def loadModels(response: Response):
                     embedding=embedding_model,
                     table_name="knowledge_base",
                     mode="append",
-                    )
+                )
                 logging.info("Successfully connected to the vector database.")
 
             except Exception as dbError:
                 logging.error(
-                f"Failed to initialize the vector database connection: {dbError}")
+                    f"Failed to initialize the vector database connection: {dbError}"
+                )
 
         return {
             "CM": "Chat, Embedding Vectordb load successfully!",
             "UM": "Backend Update successfully!",
         }
-
 
     except FileExistsError as fee:
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -170,8 +174,10 @@ async def chat(body: Chat, response: Response):
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         logging.error(f"unexpected error! '{e}'")
-        return {"CM": f"error: {e}",
-                "UM": "We couldn’t generate the output. Please verify your credentials and try again."}
+        return {
+            "CM": f"error: {e}",
+            "UM": "We couldn’t generate the output. Please verify your credentials and try again.",
+        }
 
 
 @app.get("/share-resources")
@@ -187,10 +193,8 @@ async def share_resources(path: str, response: Response):
             docs = load_document_file(path_of_file=path, source="local")
 
         # NOTE We will build a function that downloads the file and then provides the file path. Once the work is done, we will remove that file.
-        elif path.split(".")[-1] == "html": 
-            docs = load_document_file(
-                path_of_file=path, source="web"
-            )  
+        elif path.split(".")[-1] == "html":
+            docs = load_document_file(path_of_file=path, source="web")
 
         else:
             response.status_code = status.HTTP_501_NOT_IMPLEMENTED
@@ -204,7 +208,7 @@ async def share_resources(path: str, response: Response):
 
             return {
                 "CM": "save documents into the vectore db.",
-                "UM": "Documents Saved!"
+                "UM": "Documents Saved!",
             }
 
         if docs == 503:
@@ -247,8 +251,12 @@ async def get_health():
         ),
     }
 
+
 @app.post("/get_documents")
-async def list_documents(
-        pageNo: int
-):
+async def list_documents(pageNo: int):
     return get_page_data(pageNo)
+
+
+@app.delete("/documents")
+async def operation_delete(body: DeleteRequest, response: Response):
+    return delete_document(DeleteRequest.ids, response)

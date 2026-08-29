@@ -69,6 +69,7 @@ export default function KnowledgeBase() {
                         text={doc.text}
                         source={doc.metadata?.file_type}
                         file_name={doc.metadata?.file_name}
+                        onDocumentDeleted={refreshDocuments}
                     />
                 ))}
             </div>

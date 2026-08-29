@@ -1,4 +1,5 @@
 import { useProjectContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 export const DocumentCard = ({
     id,
@@ -9,7 +10,7 @@ export const DocumentCard = ({
 }) => {
 
     const { setDisplayMessage } = useProjectContext();
-
+    const navigate = useNavigate();
 
     const handleDelete = async () => {
         try {
@@ -61,7 +62,7 @@ export const DocumentCard = ({
                     Delete
                 </button>
 
-                <button onClick={() => handleUpdate(id)}>
+                <button onClick={() => navigate(`/documents/${id}`)}>
                     Update
                 </button>
             </div>

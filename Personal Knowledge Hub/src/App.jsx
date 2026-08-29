@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Chat from "./pages/Chat";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import Settings from "./pages/Settings";
+import DocumentUpdatePage from "./components/DocumentUpdatePage";
 
 //components
 import Navigation from "./components/Navigation";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/" element={<Chat />} />
             <Route path="/KnowledgeBase" element={<KnowledgeBase />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/documents/:id" element= {<DocumentUpdatePage />} />
           </Routes>
           <Navigation />
         </BrowserRouter>

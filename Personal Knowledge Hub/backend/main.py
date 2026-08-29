@@ -259,4 +259,4 @@ async def list_documents(pageNo: int):
 
 @app.delete("/documents")
 async def operation_delete(body: DeleteRequest, response: Response):
-    return delete_document(DeleteRequest.ids, response)
+    return delete_document(body.ids, response)

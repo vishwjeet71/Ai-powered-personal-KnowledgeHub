@@ -82,8 +82,8 @@ def delete_document(ids: list[str], response: Response):
 
         else:
             return {
-                "CM": f"Successfully removed {result.num_deleted_rows} documents.",
-                "UM": "The selected document(s) were successfully deleted.",
+                "CM": f"Successfully removed document {ids}.",
+                "UM": "The selected document were successfully deleted.",
             }
 
     except ValueError as ve:

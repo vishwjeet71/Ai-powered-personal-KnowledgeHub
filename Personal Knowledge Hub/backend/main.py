@@ -11,7 +11,7 @@ from langchain_community.vectorstores import LanceDB
 from langchain_community.tools import tool
 
 # moduls
-from vectorDB.vectorDB import lancedb_object, get_page_data, delete_document
+from vectorDB.vectorDB import lancedb_object, get_page_data, delete_document, get_document_data
 from llms.model_handler import load_models
 from llms.agent import get_Agent, get_agent_output
 from documentLoaders.file_loader import load_document_file
@@ -260,3 +260,8 @@ async def list_documents(pageNo: int):
 @app.delete("/documents")
 async def operation_delete(body: DeleteRequest, response: Response):
     return delete_document(body.ids, response)
+
+
+@app.post("/get_document")
+async def list_document(docID: str, response: Response):
+    return get_document_data(docID, response)

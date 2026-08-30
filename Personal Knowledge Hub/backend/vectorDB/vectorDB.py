@@ -106,3 +106,36 @@ def delete_document(ids: list[str], response: Response):
             "CM": f"[Error]: An unexpected error occurred while deleting documents from the database: {e}",
             "UM": "Something went wrong while deleting the document(s). Please try again later.",
         }
+
+
+def get_document_data(docID: str, response: Response):
+    table = _list_documents()
+
+    try:
+        if (not table) or (not table.search().to_list()):
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return {
+                "CM": "Document lookup failed: the document database is empty.",
+                "UM": "No documents are available. Please add a document and try again.",
+            }
+
+        result = table.search().where(f"id = '{docID}'").to_list()
+
+        if len(result) == 0:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return {
+                "CM": f"Document lookup failed: no document found with ID '{docID}'.",
+                "UM": "We couldn't find a document with the provided ID. Please check the ID and try again.",
+            }
+
+        return {
+            "CM": f"Document retrieved successfully with ID '{docID}'.",
+            "UM": result[0],
+        }
+
+    except Exception as E:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {
+            "CM": f"Document retrieval failed for ID '{docID}': {E}",
+            "UM": "We couldn't retrieve the document due to an unexpected error. Please try again later.",
+        }

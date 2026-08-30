@@ -139,3 +139,69 @@ def get_document_data(docID: str, response: Response):
             "CM": f"Document retrieval failed for ID '{docID}': {E}",
             "UM": "We couldn't retrieve the document due to an unexpected error. Please try again later.",
         }
+
+
+# updating document
+def update_document(id: str, update_content: str, embedding_model, response: Response):
+
+    embedding_model = embedding_model
+
+    if not embedding_model:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {
+            "CM": "The embedding model has not been initialized.",
+            "UM": "Please provide valid credentials or check your existing credentials.",
+        }
+
+    table = _list_documents()
+
+    if not table:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "CM": "The document database is empty.",
+            "UM": "No documents are available. Please add a document and try again.",
+        }
+
+    else:
+        try:
+            existing_docs = table.search().where(f"id = '{id}'").to_list()
+
+            if len(existing_docs) == 1:
+                existing_metadata = existing_docs[0].get("metadata", {})
+                existing_metadata["update_by_user"] = True
+
+                updated_record = {
+                    "id": id,
+                    "vector": embedding_model.embed_query(update_content),
+                    "text": update_content,
+                    "metadata": existing_metadata,
+                }
+
+                table.merge_insert(on="id").when_matched_update_all().execute(
+                    [updated_record]
+                )
+                return {
+                    "CM": f"Document with ID '{id}' was updated successfully.",
+                    "UM": "Document updated successfully!",
+                }
+
+            elif len(existing_docs) == 0:
+                response.status_code = status.HTTP_404_NOT_FOUND
+                return {
+                    "CM": f"No document was found with ID '{id}'.",
+                    "UM": "The document ID is incorrect or does not exist.",
+                }
+
+            else:
+                response.status_code = status.HTTP_409_CONFLICT  # try again
+                return {
+                    "CM": "Multiple documents were found with the same ID. The document could not be updated.",
+                    "UM": "Something went wrong. Please try again.",
+                }
+
+        except Exception as e:
+            response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+            return {
+                "CM": f"An unexpected error occurred while updating the document: {e}",
+                "UM": "Unable to update the document. Please try again later.",
+            }

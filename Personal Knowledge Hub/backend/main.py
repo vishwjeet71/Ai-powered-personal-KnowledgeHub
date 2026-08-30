@@ -11,7 +11,13 @@ from langchain_community.vectorstores import LanceDB
 from langchain_community.tools import tool
 
 # moduls
-from vectorDB.vectorDB import lancedb_object, get_page_data, delete_document, get_document_data
+from vectorDB.vectorDB import (
+    lancedb_object,
+    get_page_data,
+    delete_document,
+    get_document_data,
+    update_document,
+)
 from llms.model_handler import load_models
 from llms.agent import get_Agent, get_agent_output
 from documentLoaders.file_loader import load_document_file
@@ -94,6 +100,11 @@ class Chat(BaseModel):
 
 class DeleteRequest(BaseModel):
     ids: list[str]
+
+
+class UpdateDocument(BaseModel):
+    doc_id: str
+    updated_pageContent: str
 
 
 @app.get("/load-models")
@@ -265,3 +276,13 @@ async def operation_delete(body: DeleteRequest, response: Response):
 @app.post("/get_document")
 async def list_document(docID: str, response: Response):
     return get_document_data(docID, response)
+
+
+@app.patch("/update_document")
+async def update_document_through_id(body: UpdateDocument, response: Response):
+    return update_document(
+        id=body.doc_id,
+        update_content=body.updated_pageContent,
+        embedding_model=embedding_model,
+        response=response,
+    )

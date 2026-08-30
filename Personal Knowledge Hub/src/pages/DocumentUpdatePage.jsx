@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useProjectContext } from "../App";
 
 // Function
@@ -11,6 +11,7 @@ export default function DocumentUpdatePage() {
     const { id: docID } = useParams();
     const [docData, setDocData] = useState(null);
     const [docText, setDocText] = useState("");
+    const [isUpdating, setIsUpdating] = useState(false);
 
     useEffect(() => {
 
@@ -20,7 +21,7 @@ export default function DocumentUpdatePage() {
                 setDocText(data?.text)
             }
         });
-    }, [docID, setDisplayMessage]);
+    }, [docID]);
 
     if (!docData) {
         return <h2>Loading document details...</h2>;
@@ -28,6 +29,42 @@ export default function DocumentUpdatePage() {
 
     const handleUpdateRequest = async (e) => {
         e.preventDefault();
+        setIsUpdating(true);
+
+        try {
+
+            const response = await fetch("http://localhost:8000/update_document", {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    doc_id: docID,
+                    updated_pageContent: docText
+                })
+            });
+
+            const responseData = await response.json();
+            const console_message = responseData.CM;
+            const user_message = responseData.UM;
+
+            if (response.ok) {
+
+                setDisplayMessage(user_message);
+                console.log(console_message);
+            } else {
+                setDisplayMessage(user_message);
+                console.warn(console_message);
+            }
+        } catch (err) {
+
+            setDisplayMessage("Failed to Update!");
+            console.error(`Update failed: ${err}`);
+        } finally {
+
+            setIsUpdating(false);
+
+        }
     }
 
     return (
@@ -35,6 +72,11 @@ export default function DocumentUpdatePage() {
             <header>
                 <h1>Document Details</h1>
             </header>
+            {isUpdating && (
+                <div>
+                    <h2>Updating...</h2>
+                </div>
+            )}
 
             <section aria-labelledby="file-details-heading">
                 <h2 id="file-details-heading">File Information</h2>
@@ -80,8 +122,8 @@ export default function DocumentUpdatePage() {
                         />
                     </div>
 
-                    <button type="submit">
-                        Update
+                    <button type="submit" disabled={isUpdating}>
+                        {isUpdating ? "Updating..." : "Update"}
                     </button>
                 </form>
             </section>

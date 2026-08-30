@@ -26,10 +26,13 @@ export default function Chat() {
             if (modelOutput.ok) {
 
                 setModelResponse(responseData);
+                
+            } else {
+
+                console.error(responseData.CM);
+                setModelResponse(responseData.UM);
             }
 
-            console.error(responseData.CM);
-            setModelResponse(responseData.UM);
 
         } catch (error) {
 

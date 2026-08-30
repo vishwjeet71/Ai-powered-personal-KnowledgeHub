@@ -53,13 +53,13 @@ export default function BackendError() {
     return (
         <header>
             {backendStatus.backend === false && (
-                <h>Backend {backendStatus.backend}</h>
+                <h3>Backend {backendStatus.backend}</h3>
             )}
             {backendStatus.models === false && (
-                <h>Models {backendStatus.models}</h>
+                <h3>Models {backendStatus.models}</h3>
             )}
             {backendStatus.vectorDB === false && (
-                <h>Vectordb {backendStatus.vectorDB}</h>
+                <h3>Vectordb {backendStatus.vectorDB}</h3>
             )}
         </header>
     )

@@ -1,9 +1,10 @@
 import { open } from "@tauri-apps/plugin-dialog";
+import { useState } from "react";
 
 // Context
 import { useProjectContext } from "../App";
 
-export default function AddDocuments({ onDocumentAdded }) {
+export default function AddDocuments({ onDocumentAdded, setIsAdding, isAdding }) {
 
     const { setDisplayMessage, backendStatus } = useProjectContext();
 
@@ -26,7 +27,7 @@ export default function AddDocuments({ onDocumentAdded }) {
             if (filePath === null) {
                 console.log("User cancelled the file selection");
             } else {
-                await makeAddRequest(filePath, setDisplayMessage, onDocumentAdded);
+                await makeAddRequest(filePath, setDisplayMessage, onDocumentAdded, setIsAdding);
             }
         } catch (err) {
             console.error("Error selecting file:", err);
@@ -34,13 +35,15 @@ export default function AddDocuments({ onDocumentAdded }) {
     };
 
     return (
-        <button onClick={handleSelectFile} disabled={backendStatus.vectorDB === false}>
+        <button onClick={handleSelectFile} disabled={backendStatus.vectorDB === false || isAdding === "Adding your Documents..."}>
             Select File
         </button>
     );
 }
 
-const makeAddRequest = async (filePath, setDisplayMessage, onDocumentAdded) => {
+const makeAddRequest = async (filePath, setDisplayMessage, onDocumentAdded, setIsAdding) => {
+
+    setIsAdding("Adding your Documents...");
 
     try {
         const encodedPath = encodeURIComponent(filePath);
@@ -69,4 +72,6 @@ const makeAddRequest = async (filePath, setDisplayMessage, onDocumentAdded) => {
         console.error(`Document failed: ${err}`);
 
     }
+
+    setIsAdding("");
 }

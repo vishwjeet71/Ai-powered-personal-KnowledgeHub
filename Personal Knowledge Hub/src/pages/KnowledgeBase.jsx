@@ -4,11 +4,12 @@ import AddDocuments from "../components/AddDocuments";
 
 export default function KnowledgeBase() {
     const [userDocuments, setUserDocuments] = useState([]);
-    const [statusMessage, setStatusMessage] = useState("Loading..."); // Used for text messages
+    const [statusMessage, setStatusMessage] = useState("Loading Documents..."); // Used for text messages
     const [pageNo, setPageNo] = useState(1);
     const [loadMore, setLoadMore] = useState(false);
 
     const [refreshKey, setRefreshKey] = useState(0);
+    const [isAdding, setIsAdding] = useState("");
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -59,6 +60,7 @@ export default function KnowledgeBase() {
         <>
             <h2>Hello from KnowledgeBase!</h2>
 
+            {isAdding && <div>{isAdding}</div>}
             {statusMessage && <div>{statusMessage}</div>}
 
             <div>
@@ -80,7 +82,10 @@ export default function KnowledgeBase() {
                 </button>
             )}
             <div>
-                <AddDocuments onDocumentAdded={refreshDocuments} />
+                <AddDocuments
+                    onDocumentAdded={refreshDocuments}
+                    isAdding={isAdding}
+                    setIsAdding={setIsAdding} />
             </div>
         </>
     );

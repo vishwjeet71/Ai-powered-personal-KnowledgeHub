@@ -17,7 +17,9 @@ from vectorDB.vectorDB import (
     delete_document,
     get_document_data,
     update_document,
+    build_query,
 )
+
 from llms.model_handler import load_models
 from llms.agent import get_Agent, get_agent_output
 from documentLoaders.file_loader import load_document_file
@@ -58,6 +60,20 @@ async def lifespan(app: FastAPI):
             logging.error(
                 f"Failed to initialize the vector database connection: {dbError}"
             )
+
+        try:
+            ai_agent = get_Agent(chat_model=chat_model, tools=[retriever_for_agent])
+
+            if isinstance(ai_agent, str):
+                raise Exception(ai_agent)
+
+            logging.info("Successfully initialized AI agent.")
+
+        except Exception as AgentError:
+            logging.error(
+                f"We couldn't create the agent because of an unexpected error. Please try again. Details: {AgentError}"
+            )
+
     else:
         logging.error("Failed to load model objects.")
 
@@ -142,8 +158,21 @@ async def loadModels(response: Response):
                     f"Failed to initialize the vector database connection: {dbError}"
                 )
 
+            try:
+                ai_agent = get_Agent(
+                    chat_model=chat_model, tools=[retriever_for_agent]
+                )
+
+                if isinstance(ai_agent, str):
+                    raise Exception(ai_agent)
+
+                logging.info("Successfully initialized AI agent.")
+
+            except Exception as AgentError:
+                logging.error(f"Failed to initialize the Agent: {AgentError}")
+
         return {
-            "CM": "Chat, Embedding Vectordb load successfully!",
+            "CM": "Agent, Embedding & Vectordb load successfully!",
             "UM": "Backend Update successfully!",
         }
 
@@ -162,7 +191,7 @@ async def loadModels(response: Response):
     except Exception as E:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {
-            "CM": f"Unexpected error while loading Chat and Embedding models: {E}",
+            "CM": f"Unexpected error while loading Agent and Embedding models: {E}",
             "UM": "Something went wrong while loading the AI models.",
         }
 
@@ -170,7 +199,7 @@ async def loadModels(response: Response):
 @app.post("/chat")
 async def chat(body: Chat, response: Response):
 
-    if not chat_model:
+    if not ai_agent or isinstance(ai_agent, str):
         response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
         logging.error("model not initialized!")
         return {
@@ -179,8 +208,13 @@ async def chat(body: Chat, response: Response):
         }
 
     try:
-        output = await chat_model.ainvoke(body.query)
-        return output.content
+        output = await ai_agent.ainvoke(
+            {"messages": [{"role": "user", "content": body.query}]}
+        )
+
+        result = get_agent_output(output, response)
+
+        return result
 
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -286,3 +320,37 @@ async def update_document_through_id(body: UpdateDocument, response: Response):
         embedding_model=embedding_model,
         response=response,
     )
+
+
+# Tool for retriving data from db
+@tool
+def retriever_for_agent(
+    user_query: str,
+    metadata_file_name: Optional[str] = None,
+    metadata_file_type: Optional[str] = None,
+    metadata_source: Literal["local", "pdf", "doc", "docx", "web"] | None = None,
+    metadata_update_by_user: Literal[True, False] | None = None,
+) -> list:
+    """This function used for retrive users saved documents chunks from vector database. It mainly need user query, Optional your can filter data using given metadata pramaters."""
+
+    # SQL Query Builder
+    cmd = build_query(
+        file_name=metadata_file_name,
+        file_type=metadata_file_type,
+        source=metadata_source,
+        update_by_user=metadata_update_by_user,
+    )
+
+    search_kwargs = {"k": 3, "fetch_k": 9, "lambda_mult": 0.6}
+
+    if cmd:
+        search_kwargs["filter"] = cmd
+
+    if not vectordb:
+        raise NotImplementedError("VectorDB is not configured correctly.")
+
+    match_results = vectordb.as_retriever(
+        search_type="mmr", search_kwargs=search_kwargs
+    ).invoke(user_query)
+
+    return match_results

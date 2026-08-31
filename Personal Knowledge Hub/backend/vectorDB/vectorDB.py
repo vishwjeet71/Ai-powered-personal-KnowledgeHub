@@ -205,3 +205,22 @@ def update_document(id: str, update_content: str, embedding_model, response: Res
                 "CM": f"An unexpected error occurred while updating the document: {e}",
                 "UM": "Unable to update the document. Please try again later.",
             }
+
+
+# search operation
+def build_query(file_type=None, file_name=None, source=None, update_by_user=None):
+    conditions = []
+
+    if file_type is not None:
+        conditions.append(f"metadata.file_type = '{file_type}'")
+
+    if file_name is not None:
+        conditions.append(f"metadata.file_name = '{file_name}'")
+
+    if source is not None:
+        conditions.append(f"metadata.source = '{source}'")
+
+    if update_by_user is not None:
+        conditions.append(f"metadata.update_by_user = '{update_by_user}'")
+
+    return " AND ".join(conditions)

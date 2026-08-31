@@ -22,6 +22,7 @@ export default function BackendError() {
             setBackendStatus({
                 backend: responseData.backend,
                 models: responseData.models,
+                agent: responseData.agent,
                 vectorDB: responseData.vectorDB
             });
         } catch (error) {
@@ -57,6 +58,9 @@ export default function BackendError() {
             )}
             {backendStatus.models === false && (
                 <h3>Models {backendStatus.models}</h3>
+            )}
+            {backendStatus.agent === false && (
+                <h3>AI Agent {backendStatus.agent}</h3>
             )}
             {backendStatus.vectorDB === false && (
                 <h3>Vectordb {backendStatus.vectorDB}</h3>

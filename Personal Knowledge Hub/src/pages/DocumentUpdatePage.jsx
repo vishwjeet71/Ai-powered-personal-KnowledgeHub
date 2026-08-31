@@ -7,7 +7,7 @@ import requestForDocument from "../Functions/requestForDocument";
 
 export default function DocumentUpdatePage() {
 
-    const { setDisplayMessage } = useProjectContext();
+    const { setDisplayMessage, backendStatus } = useProjectContext();
     const { id: docID } = useParams();
     const [docData, setDocData] = useState(null);
     const [docText, setDocText] = useState("");
@@ -122,7 +122,7 @@ export default function DocumentUpdatePage() {
                         />
                     </div>
 
-                    <button type="submit" disabled={isUpdating}>
+                    <button type="submit" disabled={isUpdating || backendStatus.vectorDB === false}>
                         {isUpdating ? "Updating..." : "Update"}
                     </button>
                 </form>

@@ -224,9 +224,10 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
 
         if (!response.ok) {
             setBackendStatus(ps => ({
-                ...ps,
+                backend: false,
                 models: false,
-                vectorDB: false
+                vectorDB: false,
+                agent: false
             }));
 
             console.error(responseData.CM);
@@ -237,10 +238,11 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
             return;
         }
 
-        setBackendStatus(ps => ({
-            ...ps,
+        setBackendStatus(() => ({
+            backend: true,
             models: true,
-            vectorDB: true
+            vectorDB: true,
+            agent: true
         }));
 
         console.log(responseData.CM);
@@ -250,9 +252,10 @@ const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
 
     } catch (error) {
         setBackendStatus(ps => ({
-            ...ps,
+            backend: false,
             models: false,
-            vectorDB: false
+            vectorDB: false,
+            agent: false
         }));
 
         console.error(`Unable to load model! ${error}`);

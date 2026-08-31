@@ -5,7 +5,7 @@ import { useProjectContext } from "../App";
 
 export default function AddDocuments({ onDocumentAdded }) {
 
-    const { setDisplayMessage } = useProjectContext();
+    const { setDisplayMessage, backendStatus } = useProjectContext();
 
     const handleSelectFile = async () => {
 
@@ -34,7 +34,7 @@ export default function AddDocuments({ onDocumentAdded }) {
     };
 
     return (
-        <button onClick={handleSelectFile}>
+        <button onClick={handleSelectFile} disabled={backendStatus.vectorDB === false}>
             Select File
         </button>
     );

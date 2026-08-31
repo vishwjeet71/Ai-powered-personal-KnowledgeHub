@@ -1,4 +1,6 @@
 import { useState } from "react"
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useProjectContext } from "../App";
 
 export default function Chat() {
@@ -26,7 +28,7 @@ export default function Chat() {
             if (modelOutput.ok) {
 
                 setModelResponse(responseData);
-                
+
             } else {
 
                 console.error(responseData.CM);
@@ -43,11 +45,29 @@ export default function Chat() {
     }
 
     return (
-        <>
-            <h2>Hellow from Chat page!</h2>
-            <input value={userInput} placeholder="Enter your query" onChange={(e) => setUserInput(e.target.value)} />
-            <button onClick={makeRequest} disabled={backendStatus.models === false}>Send</button>
-            {modelResponse}
-        </>
-    )
+        <div className="chat-container">
+            <h2>Hello from Chat page!</h2>
+
+            <div className="input-area">
+                <input
+                    value={userInput}
+                    placeholder="Enter your query"
+                    onChange={(e) => setUserInput(e.target.value)}
+                />
+
+                <button
+                    onClick={makeRequest}
+                    disabled={backendStatus.models === false || modelResponse === "Working.."}
+                >
+                    Send
+                </button>
+            </div>
+
+            <div className="model-response">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {modelResponse}
+                </ReactMarkdown>
+            </div>
+        </div>
+    );
 }

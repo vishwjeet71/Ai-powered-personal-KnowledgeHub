@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Chat from "./pages/Chat";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import Settings from "./pages/Settings";
-import DocumentUpdatePage from "./components/DocumentUpdatePage";
+import DocumentUpdatePage from "./pages/DocumentUpdatePage";
 
 //components
 import Navigation from "./components/Navigation";

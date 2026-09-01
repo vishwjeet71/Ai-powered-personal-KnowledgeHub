@@ -34,6 +34,7 @@ export default function BackendError() {
                 setBackendStatus({
                     backend: false,
                     models: false,
+                    agent: false,
                     vectorDB: false
                 });
                 console.log("Max retries reached. Waiting for next 30s interval.");

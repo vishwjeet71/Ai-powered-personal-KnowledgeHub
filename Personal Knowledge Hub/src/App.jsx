@@ -25,6 +25,7 @@ function App() {
     backend: "idle..",
     models: "idle..",
     vectorDB: "idle..",
+    agent: "idle.."
   });
 
   const {
@@ -42,7 +43,7 @@ function App() {
             <Route path="/" element={<Chat />} />
             <Route path="/KnowledgeBase" element={<KnowledgeBase />} />
             <Route path="/settings" element={<Settings />} />
-            <Route path="/documents/:id" element= {<DocumentUpdatePage />} />
+            <Route path="/documents/:id" element={<DocumentUpdatePage />} />
           </Routes>
           <Navigation />
         </BrowserRouter>

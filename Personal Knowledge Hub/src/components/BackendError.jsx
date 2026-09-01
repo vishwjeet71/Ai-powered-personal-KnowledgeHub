@@ -2,13 +2,13 @@ import { useEffect, useRef } from "react";
 import { useProjectContext } from "../App";
 
 export default function BackendError() {
-    const { backendStatus, setBackendStatus } = useProjectContext();
+    const { backendStatus, setBackendStatus, portNumber } = useProjectContext();
 
     const retryCount = useRef(0);
 
     const makeHelthCheckRequest = async () => {
         try {
-            const response = await fetch("http://localhost:8000/health");
+            const response = await fetch(`http://localhost:${portNumber}/health`);
 
             if (!response.ok) {
                 throw new Error("Health check failed");

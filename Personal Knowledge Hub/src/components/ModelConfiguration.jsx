@@ -6,7 +6,7 @@ import { useProjectContext } from "../App";
 export default function ModelConfiguration() {
 
     const displayTime = 5000;
-    const { setBackendStatus, setDisplayMessage} = useProjectContext();
+    const { setBackendStatus, setDisplayMessage, portNumber } = useProjectContext();
     const [formData, setFormData] = useState({
         api_provider: "openai",
         api_key: "",
@@ -57,7 +57,7 @@ export default function ModelConfiguration() {
 
             // load models request
             makeLoadRequest(
-                { setDisplayMessage, setBackendStatus }
+                { setDisplayMessage, setBackendStatus, portNumber }
             );
 
         } catch (error) {
@@ -97,7 +97,7 @@ export default function ModelConfiguration() {
 
             // load model request
             makeLoadRequest(
-                { setDisplayMessage, setBackendStatus }
+                { setDisplayMessage, setBackendStatus, portNumber }
             );
 
         } catch (error) {
@@ -216,9 +216,9 @@ export default function ModelConfiguration() {
     );
 }
 
-const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus }) => {
+const makeLoadRequest = async ({ setDisplayMessage, setBackendStatus, portNumber }) => {
     try {
-        const response = await fetch("http://localhost:8000/load-models");
+        const response = await fetch(`http://localhost:${portNumber}/load-models`);
 
         const responseData = await response.json();
 

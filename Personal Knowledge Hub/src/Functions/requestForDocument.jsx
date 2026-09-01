@@ -1,7 +1,7 @@
-export default async function requestForDocument(docID, setDisplayMessage) {
+export default async function requestForDocument(docID, setDisplayMessage, portNumber) {
     try {
 
-        const response = await fetch(`http://localhost:8000/get_document?docID=${docID}`, {
+        const response = await fetch(`http://localhost:${portNumber}/get_document?docID=${docID}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

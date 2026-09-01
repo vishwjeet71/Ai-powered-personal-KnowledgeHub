@@ -6,7 +6,7 @@ import { useProjectContext } from "../App";
 
 export default function AddDocuments({ onDocumentAdded, setIsAdding, isAdding }) {
 
-    const { setDisplayMessage, backendStatus } = useProjectContext();
+    const { setDisplayMessage, backendStatus, portNumber } = useProjectContext();
 
     const handleSelectFile = async () => {
 
@@ -27,7 +27,7 @@ export default function AddDocuments({ onDocumentAdded, setIsAdding, isAdding })
             if (filePath === null) {
                 console.log("User cancelled the file selection");
             } else {
-                await makeAddRequest(filePath, setDisplayMessage, onDocumentAdded, setIsAdding);
+                await makeAddRequest(filePath, setDisplayMessage, onDocumentAdded, setIsAdding, portNumber);
             }
         } catch (err) {
             console.error("Error selecting file:", err);
@@ -41,13 +41,13 @@ export default function AddDocuments({ onDocumentAdded, setIsAdding, isAdding })
     );
 }
 
-const makeAddRequest = async (filePath, setDisplayMessage, onDocumentAdded, setIsAdding) => {
+const makeAddRequest = async (filePath, setDisplayMessage, onDocumentAdded, setIsAdding, portNumber) => {
 
     setIsAdding("Adding your Documents...");
 
     try {
         const encodedPath = encodeURIComponent(filePath);
-        const response = await fetch(`http://localhost:8000/share-resources?path=${encodedPath}`, {
+        const response = await fetch(`http://localhost:${portNumber}/share-resources?path=${encodedPath}`, {
             method: "GET"
         });
 

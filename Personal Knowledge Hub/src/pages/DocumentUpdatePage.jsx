@@ -7,7 +7,7 @@ import requestForDocument from "../Functions/requestForDocument";
 
 export default function DocumentUpdatePage() {
 
-    const { setDisplayMessage, backendStatus } = useProjectContext();
+    const { setDisplayMessage, backendStatus, portNumber } = useProjectContext();
     const { id: docID } = useParams();
     const [docData, setDocData] = useState(null);
     const [docText, setDocText] = useState("");
@@ -15,7 +15,7 @@ export default function DocumentUpdatePage() {
 
     useEffect(() => {
 
-        requestForDocument(docID, setDisplayMessage).then(data => {
+        requestForDocument(docID, setDisplayMessage, portNumber).then(data => {
             if (data) {
                 setDocData(data);
                 setDocText(data?.text)
@@ -33,7 +33,7 @@ export default function DocumentUpdatePage() {
 
         try {
 
-            const response = await fetch("http://localhost:8000/update_document", {
+            const response = await fetch(`http://localhost:${portNumber}/update_document`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"

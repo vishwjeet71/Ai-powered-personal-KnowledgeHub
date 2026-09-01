@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { DocumentCard } from "../components/DocumentCard";
 import AddDocuments from "../components/AddDocuments";
 
+// Project context
+import { useProjectContext } from "../App";
+
 export default function KnowledgeBase() {
     const [userDocuments, setUserDocuments] = useState([]);
     const [statusMessage, setStatusMessage] = useState("Loading Documents..."); // Used for text messages
@@ -11,10 +14,12 @@ export default function KnowledgeBase() {
     const [refreshKey, setRefreshKey] = useState(0);
     const [isAdding, setIsAdding] = useState("");
 
+    const { portNumber } = useProjectContext();
+
     useEffect(() => {
         const fetchDocuments = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/get_documents?pageNo=${pageNo}`, {
+                const response = await fetch(`http://localhost:${portNumber}/get_documents?pageNo=${pageNo}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"

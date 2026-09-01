@@ -11,6 +11,7 @@ import DocumentUpdatePage from "./pages/DocumentUpdatePage";
 //components
 import Navigation from "./components/Navigation";
 import BackendError from "./components/BackendError";
+import GettingBackendReady from "./components/GettingBackendReady";
 
 // Context
 import ProjectContext from "./context/BackendComponentStatus";
@@ -20,6 +21,9 @@ import { useContext } from "react";
 import useDisplayMessage from "./Functions/DisplayMessages";
 
 function App() {
+
+  const [portNumber, setPortNumber] = useState("8000");
+  const [cartStatus, setCartStatus] = useState(false);
 
   const [backendStatus, setBackendStatus] = useState({
     backend: "idle..",
@@ -33,10 +37,20 @@ function App() {
     setDisplayMessage
   } = useDisplayMessage(5000);
 
+
+  if (!cartStatus) {
+    return (
+      <GettingBackendReady
+        portNumber={portNumber}
+        setPortNumber={setPortNumber}
+        setCartStatus={setCartStatus} />
+    );
+  }
+
   return (
     <>
       <ProjectContext.Provider value={
-        { backendStatus, setBackendStatus, currentMessage, setDisplayMessage }}>
+        { backendStatus, setBackendStatus, currentMessage, setDisplayMessage, portNumber }}>
         <BackendError />
         <BrowserRouter>
           <Routes>

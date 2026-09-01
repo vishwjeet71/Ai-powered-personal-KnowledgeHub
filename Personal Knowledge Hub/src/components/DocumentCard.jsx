@@ -9,13 +9,13 @@ export const DocumentCard = ({
     onDocumentDeleted
 }) => {
 
-    const { setDisplayMessage } = useProjectContext();
+    const { setDisplayMessage, portNumber } = useProjectContext();
     const navigate = useNavigate();
 
     const handleDelete = async () => {
         try {
             const response = await fetch(
-                "http://localhost:8000/documents",
+                `http://localhost:${portNumber}/documents`,
                 {
                     method: "DELETE",
                     headers: {

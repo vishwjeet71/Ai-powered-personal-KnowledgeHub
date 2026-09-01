@@ -7,12 +7,12 @@ export default function Chat() {
     const [modelResponse, setModelResponse] = useState("");
     const [userInput, setUserInput] = useState("");
 
-    const { backendStatus } = useProjectContext();
+    const { backendStatus, portNumber } = useProjectContext();
 
     const makeRequest = async () => {
         try {
             setModelResponse("Working..")
-            const modelOutput = await fetch("http://localhost:8000/chat",
+            const modelOutput = await fetch(`http://localhost:${portNumber}/chat`,
                 {
                     method: "POST",
                     headers: {

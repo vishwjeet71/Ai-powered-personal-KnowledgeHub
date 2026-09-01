@@ -11,7 +11,6 @@
     "dialog:allow-open",
     "fs:default",
     "fs:allow-write-text-file",
-
     {
       "identifier": "fs:allow-mkdir",
       "allow": [
@@ -20,7 +19,6 @@
         }
       ]
     },
-
     {
       "identifier": "fs:allow-write-text-file",
       "allow": [
@@ -30,7 +28,6 @@
         }
       ]
     },
-
     {
       "identifier": "fs:allow-exists",
       "allow": [
@@ -40,7 +37,6 @@
         }
       ]
     },
-
     {
       "identifier": "fs:allow-remove",
       "allow": [
@@ -59,6 +55,7 @@
           "args": true
         }
       ]
-    }
+    },
+    "shell:default"
   ]
 }

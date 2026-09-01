@@ -1,5 +1,5 @@
 from platformdirs import user_config_dir
-import os, logging
+import os, logging, sys, uvicorn
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status, Response
@@ -159,9 +159,7 @@ async def loadModels(response: Response):
                 )
 
             try:
-                ai_agent = get_Agent(
-                    chat_model=chat_model, tools=[retriever_for_agent]
-                )
+                ai_agent = get_Agent(chat_model=chat_model, tools=[retriever_for_agent])
 
                 if isinstance(ai_agent, str):
                     raise Exception(ai_agent)
@@ -354,3 +352,9 @@ def retriever_for_agent(
     ).invoke(user_query)
 
     return match_results
+
+
+if __name__ == "__main__":
+
+    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
+    uvicorn.run(app, host="127.0.0.1", port=port, reload=False)

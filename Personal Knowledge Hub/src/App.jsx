@@ -9,6 +9,7 @@ import Chat from "./pages/Chat";
 import KnowledgeBase from "./pages/KnowledgeBase";
 import Settings from "./pages/Settings";
 import DocumentUpdatePage from "./pages/DocumentUpdatePage";
+import DocumentDetailsPage from "./pages/DocumentDetails";
 
 //components
 import Navigation from "./components/Navigation";
@@ -95,6 +96,7 @@ function App() {
             <Route path="/KnowledgeBase" element={<KnowledgeBase />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/documents/:id" element={<DocumentUpdatePage />} />
+            <Route path="/getDocumentDetails/:id" element={<DocumentDetailsPage />} />
           </Routes>
           <Navigation />
         </BrowserRouter>

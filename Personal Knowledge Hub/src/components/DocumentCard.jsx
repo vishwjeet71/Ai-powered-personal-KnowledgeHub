@@ -65,6 +65,10 @@ export const DocumentCard = ({
                 <button onClick={() => navigate(`/documents/${id}`)}>
                     Update
                 </button>
+
+                <button onClick={() => navigate(`/getDocumentDetails/${id}`)} >
+                    More Details
+                </button>
             </div>
         </div>
     );

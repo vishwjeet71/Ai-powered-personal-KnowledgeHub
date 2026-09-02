@@ -1,5 +1,5 @@
 from platformdirs import user_config_dir
-import os, logging, sys, uvicorn
+import os, logging, sys, uvicorn, signal
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status, Response
@@ -352,6 +352,17 @@ def retriever_for_agent(
     ).invoke(user_query)
 
     return match_results
+
+
+@app.get("/get_backend_status")
+def backendHealth():
+    return {"status": "ok"}
+
+
+@app.get("/shutdown")
+def shutdown_backend():
+    os.kill(os.getpid(), signal.SIGTERM)
+    return {"status": "Backend shutting down safely..."}
 
 
 if __name__ == "__main__":

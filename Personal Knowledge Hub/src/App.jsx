@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/core";
 
 // pages
 import Chat from "./pages/Chat";
@@ -25,6 +27,8 @@ function App() {
   const [portNumber, setPortNumber] = useState("8000");
   const [cartStatus, setCartStatus] = useState(false);
 
+  const [backendChild, setBackendChild] = useState(null);
+
   const [backendStatus, setBackendStatus] = useState({
     backend: "idle..",
     models: "idle..",
@@ -38,12 +42,45 @@ function App() {
   } = useDisplayMessage(5000);
 
 
+  useEffect(() => {
+    let unlistenCloseRequest;
+
+    async function setupExitListener() {
+      try {
+        const appWindow = getCurrentWindow();
+
+        unlistenCloseRequest = await appWindow.onCloseRequested(async () => {
+          console.log(`Closing application. Shutting down backend on port: ${portNumber}`);
+          try {
+            // Send the dynamic active port number to Rust to kill the right worker
+            await invoke("send_backend_shutdown", { port: portNumber });
+            console.log("Shutdown signal handled successfully.");
+          } catch (err) {
+            console.error("Failed to execute dynamic endpoint shutdown:", err);
+          }
+        });
+      } catch (e) {
+        console.error("Failed to bind window close listener:", e);
+      }
+    }
+
+    setupExitListener();
+
+    return () => {
+      if (unlistenCloseRequest) {
+        unlistenCloseRequest();
+      }
+    };
+  }, [portNumber]);
+
+
   if (!cartStatus) {
     return (
       <GettingBackendReady
         portNumber={portNumber}
         setPortNumber={setPortNumber}
-        setCartStatus={setCartStatus} />
+        setCartStatus={setCartStatus}
+        setBackendChild={setBackendChild} />
     );
   }
 

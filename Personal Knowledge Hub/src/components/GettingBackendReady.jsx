@@ -16,15 +16,18 @@
 // We don't return a promise here; we wait for the backend response.
 // The operation either succeeds or failed.
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Command } from "@tauri-apps/plugin-shell";
 
 export default function GettingBackendReady({
   portNumber,
   setPortNumber,
-  setCartStatus
+  setCartStatus,
+  setBackendChild 
 }) {
   const [error, setError] = useState(false);
+
+  const startupRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,17 +36,35 @@ export default function GettingBackendReady({
       try {
         setError(false);
 
-        console.log(`Starting backend on port ${portNumber}...`);
+        if (!startupRef.current) {
+          console.log(`Starting backend on port ${portNumber}...`);
 
-        const command = Command.sidecar(
-          "binaries/backend",
-          [String(portNumber)]
-        );
+          startupRef.current = (async () => {
+            const command = Command.sidecar(
+              "binaries/backend",
+              [String(portNumber)]
+            );
 
-        const child = await command.spawn();
+            const child = await command.spawn();
 
-        console.log("Backend started successfully!");
-        console.log("PID:", child.pid);
+            console.log(
+              "Backend process spawned:",
+              child.pid
+            );
+
+            setBackendChild(child); 
+
+            await waitForBackend(
+              `http://localhost:${portNumber}`
+            );
+
+            console.log("Backend is actually ready!");
+
+            return child;
+          })();
+        }
+
+        await startupRef.current;
 
         if (!cancelled) {
           setCartStatus(true);
@@ -51,6 +72,8 @@ export default function GettingBackendReady({
 
       } catch (err) {
         console.error("Failed to start backend:", err);
+
+        startupRef.current = null;
 
         if (!cancelled) {
           setError(true);
@@ -63,7 +86,7 @@ export default function GettingBackendReady({
     return () => {
       cancelled = true;
     };
-  }, [portNumber, setCartStatus]);
+  }, [portNumber, setCartStatus, setBackendChild]);
 
   // Backend failed
   if (error) {
@@ -100,4 +123,25 @@ function getRandomPortNumber(setPortNumber) {
   console.log(`Trying new port: ${portNumber}`);
 
   setPortNumber(String(portNumber));
+}
+
+
+async function waitForBackend(url, timeout = 20000) {
+  const start = Date.now();
+
+  while (Date.now() - start < timeout) {
+    try {
+      const response = await fetch(`${url}/get_backend_status`);
+
+      if (response.ok) {
+        return true;
+      }
+    } catch {
+      // Backend isn't ready yet
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  }
+
+  throw new Error("Backend did not become ready in time");
 }

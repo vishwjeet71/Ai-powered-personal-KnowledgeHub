@@ -1,11 +1,5 @@
 /* This CSS file was generated with the help of AI, based on a reference image and its color palette */
 
-body {
-  background-color: #2c2c2c;
-  font-family: Arial, sans-serif;
-  color: #f5f9fb; 
-}
-
 :root {
   /* ---- Brief-specified palette ------------------------------------- */
   --color-bg-primary: #000000;   /* backdrop behind nav + main layout */
@@ -99,6 +93,21 @@ button, input, textarea, select {
 
 button {
   cursor: pointer;
+  background: none;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+  background: none;
+  border: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 a {
@@ -177,6 +186,11 @@ textarea:focus-visible,
   min-width: 0;
   overflow-y: auto;
   padding: var(--space-6) var(--space-7);
+  background: var(--color-bg-primary);
+  /* Named container so panels inside (e.g. Settings) can respond to the
+     actual space available next to the sidebar, not the raw viewport width */
+  container-type: inline-size;
+  container-name: main;
 }
 
 /* ---- Sidebar navigation --------------------------------------------- */
@@ -484,9 +498,15 @@ textarea:focus-visible,
     color var(--transition-base), opacity var(--transition-base);
 }
 
+/* Explicit colors rather than opacity alone — opacity on a white button
+   over a black background reads as a pale, low-contrast smear. This wins
+   over .btn--primary/--outline/--danger-outline regardless of source
+   order (class + pseudo-class beats a single class). */
 .btn:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-border);
+  color: var(--color-label);
 }
 
 .btn__icon {
@@ -936,10 +956,38 @@ textarea:focus-visible,
    ========================================================================== */
 
 .settings-page__panels {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-5);
-  max-width: 640px;
+  max-width: 1200px;
+}
+
+/* Once there's real width next to the sidebar, stop stacking everything in
+   one column: Model Configuration (the tall one) takes the left column,
+   System status + App Details share the right column. Keyed to the actual
+   space inside .app-main (a container), not the viewport — so this still
+   does the right thing if the sidebar width ever changes. */
+@container main (min-width: 760px) {
+  .settings-page__panels {
+    grid-template-columns: minmax(340px, 1.4fr) minmax(300px, 1fr);
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .settings-page__panels .model-configuration {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .settings-page__panels .backend-overview {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .settings-page__panels .app-details {
+    grid-column: 2;
+    grid-row: 2;
+  }
 }
 
 .model-configuration__delete {

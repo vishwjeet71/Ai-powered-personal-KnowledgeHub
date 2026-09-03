@@ -52,24 +52,38 @@ export const DocumentCard = ({
     };
 
     return (
-        <div>
-            <p>{text}</p>
-            <div>
-                <p>File name: {file_name}</p>
-                <p>Type: {source}</p>
+        <article className="document-card">
+            <p className="document-card__text">{text}</p>
 
-                <button onClick={handleDelete}>
-                    Delete
+            <div className="document-card__meta">
+                <span className="document-card__meta-item">File name: {file_name}</span>
+                <span className="document-card__meta-item">Type: {source}</span>
+            </div>
+
+            <div className="document-card__actions">
+                <button className="btn btn--danger-outline btn--small" onClick={handleDelete}>
+                    <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-8 0 1 12a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1l1-12" />
+                    </svg>
+                    <span>Delete</span>
                 </button>
 
-                <button onClick={() => navigate(`/documents/${id}`)}>
-                    Update
+                <button className="btn btn--outline btn--small" onClick={() => navigate(`/documents/${id}`)}>
+                    <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M4 20h4L18.5 9.5a2 2 0 0 0 0-2.8l-1.2-1.2a2 2 0 0 0-2.8 0L4 15v5Z" />
+                    </svg>
+                    <span>Update</span>
                 </button>
 
-                <button onClick={() => navigate(`/getDocumentDetails/${id}`)} >
-                    More Details
+                <button className="btn btn--outline btn--small" onClick={() => navigate(`/getDocumentDetails/${id}`)} >
+                    <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="8.5" />
+                        <line x1="12" y1="11" x2="12" y2="16" />
+                        <circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none" />
+                    </svg>
+                    <span>More Details</span>
                 </button>
             </div>
-        </div>
+        </article>
     );
 };

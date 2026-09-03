@@ -24,7 +24,11 @@ export default function DocumentUpdatePage() {
     }, [docID]);
 
     if (!docData) {
-        return <h2>Loading document details...</h2>;
+        return (
+            <div className="page loading-state">
+                <p className="loading-state__text">Loading document details...</p>
+            </div>
+        );
     }
 
     const handleUpdateRequest = async (e) => {
@@ -68,36 +72,37 @@ export default function DocumentUpdatePage() {
     }
 
     return (
-        <main>
-            <header>
-                <h1>Document Details</h1>
+        <main className="page document-update-page">
+            <header className="page-header">
+                <h1 className="page-header__title">Document Details</h1>
             </header>
+
             {isUpdating && (
-                <div>
-                    <h2>Updating...</h2>
+                <div className="status-banner">
+                    <p>Updating...</p>
                 </div>
             )}
 
-            <section aria-labelledby="file-details-heading">
-                <h2 id="file-details-heading">File Information</h2>
+            <section className="panel" aria-labelledby="file-details-heading">
+                <h2 id="file-details-heading" className="panel__title">File Information</h2>
 
-                <dl>
-                    <div>
+                <dl className="detail-list">
+                    <div className="detail-list__row">
                         <dt>File Name</dt>
                         <dd>{docData.metadata?.file_name || "Unknown"}</dd>
                     </div>
 
-                    <div>
+                    <div className="detail-list__row">
                         <dt>File Type</dt>
                         <dd>{docData.metadata?.file_type || "Unknown"}</dd>
                     </div>
 
-                    <div>
+                    <div className="detail-list__row">
                         <dt>Added / Updated Date</dt>
-                        <dd>{docData.metadata?.moddate || "Unknown"}</dd>
+                        <dd className="mono">{docData.metadata?.moddate || "Unknown"}</dd>
                     </div>
 
-                    <div>
+                    <div className="detail-list__row">
                         <dt>Updated by User</dt>
                         <dd>
                             {String(docData.metadata?.update_by_user).toUpperCase()}
@@ -106,23 +111,24 @@ export default function DocumentUpdatePage() {
                 </dl>
             </section>
 
-            <section aria-labelledby="document-editor-heading">
-                <h2 id="document-editor-heading">Edit Document</h2>
+            <section className="panel" aria-labelledby="document-editor-heading">
+                <h2 id="document-editor-heading" className="panel__title">Edit Document</h2>
 
-                <form onSubmit={handleUpdateRequest}>
-                    <div>
-                        <label htmlFor="document-text">
+                <form className="form" onSubmit={handleUpdateRequest}>
+                    <div className="form__field">
+                        <label htmlFor="document-text" className="form__label">
                             Document Content
                         </label>
 
                         <textarea
                             id="document-text"
+                            className="form__textarea"
                             value={docText}
                             onChange={(e) => setDocText(e.target.value)}
                         />
                     </div>
 
-                    <button type="submit" disabled={isUpdating || backendStatus.vectorDB === false}>
+                    <button type="submit" className="btn btn--primary" disabled={isUpdating || backendStatus.vectorDB === false}>
                         {isUpdating ? "Updating..." : "Update"}
                     </button>
                 </form>

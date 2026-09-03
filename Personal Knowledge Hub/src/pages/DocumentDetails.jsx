@@ -23,29 +23,78 @@ export default function DocumentDetailsPage() {
     }, []);
 
     if (!docData) {
-        return <h2>Loading document details...</h2>;
+        return (
+            <div className="page loading-state">
+                <p className="loading-state__text">Loading document details...</p>
+            </div>
+        );
     }
 
     return (
-        <>
-            <h2>Document Details</h2>
-            <h2>ID: {docID}</h2>
-            <div>
-                <p>PRODUCER: {docData.metadata.producer || "Unknown"} </p>
-                <p>CREATOR: {docData.metadata.creator || "Unknown"}</p>
-                <p>CREATION DATE: {docData.metadata.creationdate || "Unknown"} </p>
-                <p>SOURCE: {docData.metadata.source || "undefined"} </p>
-                <p>FILE PATH: {docData.metadata.file_path || "Path Not Available"} </p>
-                <p>PAGES: {docData.metadata.page || "NULL"} </p>
-                <p>TOTAL PAGES: {docData.metadata.total_pages || "NULL"} </p>
-                <p>FORMAT: {docData.metadata.format || "Unknown"} </p>
-                <p>AUTHOR: {docData.metadata.author || "Unknown"} </p>
-                <p>MOD DATE: {docData.metadata.moddate || "Unknown"} </p>
-                <p>FILE NAME: {docData.metadata.file_name || "Unknown"} </p>
-                <p>FILE TYPE: {docData.metadata.file_type || "Unknown"} </p>
-                <p>UPDATE BY USER: {docData.metadata.update_by_user ? "YES" : "NO"} </p>
-                <p>TEXT: {docData.text ? docData.text : "No TEXT"} </p>
-            </div>
-        </>
+        <div className="page document-details-page">
+            <header className="page-header">
+                <h1 className="page-header__title">Document Details</h1>
+                <p className="page-header__meta mono">ID: {docID}</p>
+            </header>
+
+            <section className="panel">
+                <dl className="detail-list">
+                    <div className="detail-list__row">
+                        <dt>PRODUCER:</dt>
+                        <dd>{docData.metadata.producer || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>CREATOR:</dt>
+                        <dd>{docData.metadata.creator || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>CREATION DATE:</dt>
+                        <dd className="mono">{docData.metadata.creationdate || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>SOURCE:</dt>
+                        <dd>{docData.metadata.source || "undefined"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>FILE PATH:</dt>
+                        <dd className="mono">{docData.metadata.file_path || "Path Not Available"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>PAGES:</dt>
+                        <dd>{docData.metadata.page || "NULL"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>TOTAL PAGES:</dt>
+                        <dd>{docData.metadata.total_pages || "NULL"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>FORMAT:</dt>
+                        <dd>{docData.metadata.format || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>AUTHOR:</dt>
+                        <dd>{docData.metadata.author || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>MOD DATE:</dt>
+                        <dd className="mono">{docData.metadata.moddate || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>FILE NAME:</dt>
+                        <dd>{docData.metadata.file_name || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>FILE TYPE:</dt>
+                        <dd>{docData.metadata.file_type || "Unknown"}</dd>
+                    </div>
+                    <div className="detail-list__row">
+                        <dt>UPDATE BY USER:</dt>
+                        <dd>{docData.metadata.update_by_user ? "YES" : "NO"}</dd>
+                    </div>
+                </dl>
+
+                <p className="document-details-page__body">TEXT: {docData.text ? docData.text : "No TEXT"}</p>
+            </section>
+        </div>
     );
 }

@@ -86,27 +86,31 @@ function App() {
   }
 
   return (
-    <>
+    <div className="app-shell">
       <ProjectContext.Provider value={
         { backendStatus, setBackendStatus, currentMessage, setDisplayMessage, portNumber }}>
         <BackendError />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Chat />} />
-            <Route path="/KnowledgeBase" element={<KnowledgeBase />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/documents/:id" element={<DocumentUpdatePage />} />
-            <Route path="/getDocumentDetails/:id" element={<DocumentDetailsPage />} />
-          </Routes>
-          <Navigation />
+          <div className="app-layout">
+            <Navigation />
+            <main className="app-main">
+              <Routes>
+                <Route path="/" element={<Chat />} />
+                <Route path="/KnowledgeBase" element={<KnowledgeBase />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/documents/:id" element={<DocumentUpdatePage />} />
+                <Route path="/getDocumentDetails/:id" element={<DocumentDetailsPage />} />
+              </Routes>
+            </main>
+          </div>
         </BrowserRouter>
       </ProjectContext.Provider>
       {currentMessage && (
-        <div className="message">
-          {currentMessage}
+        <div className="toast" role="status">
+          <p className="toast__message">{currentMessage}</p>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

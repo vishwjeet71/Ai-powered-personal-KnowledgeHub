@@ -62,13 +62,15 @@ export default function KnowledgeBase() {
     const refreshDocuments = () => { setRefreshKey(prev => prev + 1); };
 
     return (
-        <>
-            <h2>Hello from KnowledgeBase!</h2>
+        <div className="page knowledge-base-page">
+            <header className="page-header">
+                <h1 className="page-header__title">Hello from KnowledgeBase!</h1>
+            </header>
 
-            {isAdding && <div>{isAdding}</div>}
-            {statusMessage && <div>{statusMessage}</div>}
+            {isAdding && <div className="status-banner">{isAdding}</div>}
+            {statusMessage && <div className="status-banner status-banner--muted">{statusMessage}</div>}
 
-            <div>
+            <div className="document-grid">
                 {userDocuments.map((doc) => (
                     <DocumentCard
                         key={doc.id}
@@ -82,17 +84,20 @@ export default function KnowledgeBase() {
             </div>
 
             {loadMore && (
-                <button onClick={() => loadAnotherPage(setPageNo)}>
-                    Load More
-                </button>
+                <div className="knowledge-base-page__load-more">
+                    <button className="btn btn--outline" onClick={() => loadAnotherPage(setPageNo)}>
+                        Load More
+                    </button>
+                </div>
             )}
-            <div>
+
+            <div className="knowledge-base-page__toolbar">
                 <AddDocuments
                     onDocumentAdded={refreshDocuments}
                     isAdding={isAdding}
                     setIsAdding={setIsAdding} />
             </div>
-        </>
+        </div>
     );
 }
 

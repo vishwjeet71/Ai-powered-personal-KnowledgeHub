@@ -81,70 +81,96 @@ export default function AppDetails() {
 
     if (loading) {
         return (
-            <div>
-                <h2>App Details</h2>
-                <p>Loading application information...</p>
-            </div>
+            <section className="panel app-details">
+                <h2 className="panel__title">App Details</h2>
+                <p className="loading-state__text">Loading application information...</p>
+            </section>
         );
     }
 
     if (error) {
         return (
-            <div>
-                <h2>App Details</h2>
-                <p>{error}</p>
-            </div>
+            <section className="panel app-details">
+                <h2 className="panel__title">App Details</h2>
+                <p className="error-text">{error}</p>
+            </section>
         );
     }
 
     return (
-        <div>
-            <h2>App Details</h2>
-            <h2>{appInfo.appName}</h2>
+        <section className="panel app-details">
+            <h2 className="panel__title">App Details</h2>
 
-            <p>{appInfo.appDis}</p>
+            <div className="app-details__profile">
+                <span className="app-details__avatar" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round">
+                        <path d="M6 3.5h9l4 4V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V5A1.5 1.5 0 0 1 6.5 3.5Z" />
+                        <path d="M14.5 3.5V8H19" />
+                    </svg>
+                </span>
+                <div className="app-details__identity">
+                    <h3 className="app-details__name">{appInfo.appName}</h3>
+                    <span className="badge">{appInfo.build}</span>
+                </div>
+            </div>
 
-            <hr />
+            <p className="app-details__description">{appInfo.appDis}</p>
 
-            <h3>Application</h3>
+            <hr className="divider" />
 
-            <p>
-                <strong>Version:</strong> {appInfo.appVersion}
-            </p>
+            <h3 className="app-details__section-title">Application</h3>
 
-            <p>
-                <strong>Build:</strong> {appInfo.build}
-            </p>
+            <dl className="detail-list">
+                <div className="detail-list__row">
+                    <dt>Version:</dt>
+                    <dd className="mono">{appInfo.appVersion}</dd>
+                </div>
 
-            <p>
-                <strong>App ID:</strong> {appInfo.appId}
-            </p>
+                <div className="detail-list__row">
+                    <dt>Build:</dt>
+                    <dd>{appInfo.build}</dd>
+                </div>
 
-            <p>
-                <strong>Tauri:</strong> {appInfo.tauriVersion}
-            </p>
+                <div className="detail-list__row">
+                    <dt>App ID:</dt>
+                    <dd className="mono">{appInfo.appId}</dd>
+                </div>
 
-            <hr />
+                <div className="detail-list__row">
+                    <dt>Tauri:</dt>
+                    <dd className="mono">{appInfo.tauriVersion}</dd>
+                </div>
+            </dl>
 
-            <h3>System</h3>
+            <hr className="divider" />
 
-            <p>
-                <strong>Operating System:</strong> {appInfo.os}
-            </p>
+            <h3 className="app-details__section-title">System</h3>
 
-            <p>
-                <strong>OS Version:</strong> {appInfo.osVersion}
-            </p>
+            <dl className="detail-list">
+                <div className="detail-list__row">
+                    <dt>Operating System:</dt>
+                    <dd>{appInfo.os}</dd>
+                </div>
 
-            <p>
-                <strong>Architecture:</strong> {appInfo.architecture}
-            </p>
+                <div className="detail-list__row">
+                    <dt>OS Version:</dt>
+                    <dd className="mono">{appInfo.osVersion}</dd>
+                </div>
 
-            <hr />
+                <div className="detail-list__row">
+                    <dt>Architecture:</dt>
+                    <dd className="mono">{appInfo.architecture}</dd>
+                </div>
+            </dl>
 
-            <button onClick={openDocumentation}>
-                Visit Documentation
+            <button className="btn btn--outline" onClick={openDocumentation}>
+                <span>Visit Documentation</span>
+                <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M9 6H6.5A1.5 1.5 0 0 0 5 7.5v10A1.5 1.5 0 0 0 6.5 19h10a1.5 1.5 0 0 0 1.5-1.5V15" />
+                    <path d="M13 5h6v6" />
+                    <path d="M20 4 11 13" />
+                </svg>
             </button>
-        </div>
+        </section>
     );
 }

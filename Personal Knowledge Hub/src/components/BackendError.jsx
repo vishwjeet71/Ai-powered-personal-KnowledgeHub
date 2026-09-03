@@ -53,19 +53,33 @@ export default function BackendError() {
     }, []);
 
     return (
-        <header>
-            {backendStatus.backend === false && (
-                <h3>Backend {backendStatus.backend}</h3>
-            )}
-            {backendStatus.models === false && (
-                <h3>Models {backendStatus.models}</h3>
-            )}
-            {backendStatus.agent === false && (
-                <h3>AI Agent {backendStatus.agent}</h3>
-            )}
-            {backendStatus.vectorDB === false && (
-                <h3>Vectordb {backendStatus.vectorDB}</h3>
-            )}
+        <header className="status-alert">
+            <ul className="status-alert__list">
+                {backendStatus.backend === false && (
+                    <li className="status-alert__item">
+                        <span className="status-alert__dot" aria-hidden="true"></span>
+                        <h3 className="status-alert__text">Backend {backendStatus.backend}</h3>
+                    </li>
+                )}
+                {backendStatus.models === false && (
+                    <li className="status-alert__item">
+                        <span className="status-alert__dot" aria-hidden="true"></span>
+                        <h3 className="status-alert__text">Models {backendStatus.models}</h3>
+                    </li>
+                )}
+                {backendStatus.agent === false && (
+                    <li className="status-alert__item">
+                        <span className="status-alert__dot" aria-hidden="true"></span>
+                        <h3 className="status-alert__text">AI Agent {backendStatus.agent}</h3>
+                    </li>
+                )}
+                {backendStatus.vectorDB === false && (
+                    <li className="status-alert__item">
+                        <span className="status-alert__dot" aria-hidden="true"></span>
+                        <h3 className="status-alert__text">Vectordb {backendStatus.vectorDB}</h3>
+                    </li>
+                )}
+            </ul>
         </header>
     )
 }

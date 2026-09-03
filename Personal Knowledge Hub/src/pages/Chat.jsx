@@ -45,28 +45,34 @@ export default function Chat() {
     }
 
     return (
-        <div className="chat-container">
-            <h2>Hello from Chat page!</h2>
+        <div className="page chat-page">
+            <header className="page-header">
+                <h1 className="page-header__title">Hello from Chat page!</h1>
+            </header>
 
-            <div className="input-area">
+            <div className="chat-page__response" aria-live="polite">
+                <div className="markdown-content">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {modelResponse}
+                    </ReactMarkdown>
+                </div>
+            </div>
+
+            <div className="chat-page__composer">
                 <input
+                    className="chat-page__input"
                     value={userInput}
                     placeholder="Enter your query"
                     onChange={(e) => setUserInput(e.target.value)}
                 />
 
                 <button
+                    className="btn btn--primary"
                     onClick={makeRequest}
                     disabled={backendStatus.models === false || modelResponse === "Working.."}
                 >
                     Send
                 </button>
-            </div>
-
-            <div className="model-response">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {modelResponse}
-                </ReactMarkdown>
             </div>
         </div>
     );

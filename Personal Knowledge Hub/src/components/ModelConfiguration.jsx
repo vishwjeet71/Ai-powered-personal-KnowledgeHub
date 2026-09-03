@@ -110,109 +110,121 @@ export default function ModelConfiguration() {
 
 
     return (
-        <>
-            <div>
-                <form onSubmit={handleSubmit}>
-                    <h3>Model configuration</h3>
-                    <div>
-                        <label>
-                            <input
-                                type="radio"
-                                name="api_provider"
-                                value="google"
-                                checked={formData.api_provider === "google"}
-                                onChange={handleChange}
-                            />
-                            <strong>Google</strong>
-                            <p>Gemini chat + embeddings</p>
-                        </label>
-                    </div>
+        <section className="panel model-configuration">
+            <form className="form" onSubmit={handleSubmit}>
+                <h2 className="panel__title">Model configuration</h2>
 
-                    <div>
-                        <label>
-                            <input
-                                type="radio"
-                                name="api_provider"
-                                value="openai"
-                                checked={formData.api_provider === "openai"}
-                                onChange={handleChange}
-                            />
-                            <strong>OpenAI</strong>
-                            <p>GPT chat + embeddings</p>
-                        </label>
-                    </div>
+                <fieldset className="form__fieldset">
+                    <legend className="form__legend">Provider</legend>
 
-                    <div>
-                        <label>
-                            <input
-                                type="radio"
-                                name="api_provider"
-                                value="openai-compatible"
-                                checked={formData.api_provider === "openai-compatible"}
-                                onChange={handleChange}
-                            />
-                            <strong>OpenAI-compatible</strong>
-                            <p>Custom base URL, e.g. a local server</p>
-                        </label>
-                    </div>
-                    <div>
-                        <label htmlFor="api-key">API key</label>
+                    <label className="option-card">
                         <input
-                            type="password"
-                            id="api-key"
-                            name="api_key"
-                            value={formData.api_key}
+                            type="radio"
+                            name="api_provider"
+                            value="google"
+                            checked={formData.api_provider === "google"}
                             onChange={handleChange}
-                            placeholder="••••••••••••"
+                            className="option-card__input"
                         />
-                    </div>
-                    {formData.api_provider === "openai-compatible" && (
-                        <div>
-                            <h4>Custom Provider Details</h4>
+                        <span className="option-card__body">
+                            <strong className="option-card__title">Google</strong>
+                            <p className="option-card__description">Gemini chat + embeddings</p>
+                        </span>
+                    </label>
 
-                            <div>
-                                <label htmlFor="base-url">Base URL</label>
-                                <input
-                                    type="text"
-                                    id="base-url"
-                                    name="base_url"
-                                    value={formData.base_url}
-                                    onChange={handleChange}
-                                    placeholder="https://example.com"
-                                />
-                            </div>
+                    <label className="option-card">
+                        <input
+                            type="radio"
+                            name="api_provider"
+                            value="openai"
+                            checked={formData.api_provider === "openai"}
+                            onChange={handleChange}
+                            className="option-card__input"
+                        />
+                        <span className="option-card__body">
+                            <strong className="option-card__title">OpenAI</strong>
+                            <p className="option-card__description">GPT chat + embeddings</p>
+                        </span>
+                    </label>
 
-                            <div>
-                                <label htmlFor="chat-model">Chat Model Name</label>
-                                <input
-                                    type="text"
-                                    id="chat-model"
-                                    name="chat_model_name"
-                                    value={formData.chat_model_name}
-                                    onChange={handleChange}
-                                    placeholder="llama-3"
-                                />
-                            </div>
+                    <label className="option-card">
+                        <input
+                            type="radio"
+                            name="api_provider"
+                            value="openai-compatible"
+                            checked={formData.api_provider === "openai-compatible"}
+                            onChange={handleChange}
+                            className="option-card__input"
+                        />
+                        <span className="option-card__body">
+                            <strong className="option-card__title">OpenAI-compatible</strong>
+                            <p className="option-card__description">Custom base URL, e.g. a local server</p>
+                        </span>
+                    </label>
+                </fieldset>
 
-                            <div>
-                                <label htmlFor="embd-model">Embedding Model Name</label>
-                                <input
-                                    type="text"
-                                    id="embd-model"
-                                    name="embd_model_name"
-                                    value={formData.embd_model_name}
-                                    onChange={handleChange}
-                                    placeholder="text-embedding-3"
-                                />
-                            </div>
+                <div className="form__field">
+                    <label htmlFor="api-key" className="form__label">API key</label>
+                    <input
+                        type="password"
+                        id="api-key"
+                        name="api_key"
+                        value={formData.api_key}
+                        onChange={handleChange}
+                        placeholder="••••••••••••"
+                        className="form__input"
+                    />
+                </div>
+
+                {formData.api_provider === "openai-compatible" && (
+                    <fieldset className="form__fieldset form__fieldset--nested">
+                        <legend className="form__legend">Custom Provider Details</legend>
+
+                        <div className="form__field">
+                            <label htmlFor="base-url" className="form__label">Base URL</label>
+                            <input
+                                type="text"
+                                id="base-url"
+                                name="base_url"
+                                value={formData.base_url}
+                                onChange={handleChange}
+                                placeholder="https://example.com"
+                                className="form__input"
+                            />
                         </div>
-                    )}
 
-                    <button type="submit">Save Settings</button>
-                </form>
-                <button onClick={handleDelete}>Delete credentials</button>
-            </div>
-        </>
+                        <div className="form__field">
+                            <label htmlFor="chat-model" className="form__label">Chat Model Name</label>
+                            <input
+                                type="text"
+                                id="chat-model"
+                                name="chat_model_name"
+                                value={formData.chat_model_name}
+                                onChange={handleChange}
+                                placeholder="llama-3"
+                                className="form__input"
+                            />
+                        </div>
+
+                        <div className="form__field">
+                            <label htmlFor="embd-model" className="form__label">Embedding Model Name</label>
+                            <input
+                                type="text"
+                                id="embd-model"
+                                name="embd_model_name"
+                                value={formData.embd_model_name}
+                                onChange={handleChange}
+                                placeholder="text-embedding-3"
+                                className="form__input"
+                            />
+                        </div>
+                    </fieldset>
+                )}
+
+                <button type="submit" className="btn btn--primary">Save Settings</button>
+            </form>
+            <button className="btn btn--danger-outline model-configuration__delete" onClick={handleDelete}>Delete credentials</button>
+        </section>
     );
 }
 

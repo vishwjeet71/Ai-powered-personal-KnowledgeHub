@@ -23,7 +23,7 @@ export default function GettingBackendReady({
   portNumber,
   setPortNumber,
   setCartStatus,
-  setBackendChild 
+  setBackendChild
 }) {
   const [error, setError] = useState(false);
 
@@ -52,7 +52,7 @@ export default function GettingBackendReady({
               child.pid
             );
 
-            setBackendChild(child); 
+            setBackendChild(child);
 
             await waitForBackend(
               `http://localhost:${portNumber}`
@@ -91,25 +91,42 @@ export default function GettingBackendReady({
   // Backend failed
   if (error) {
     return (
-      <div>
-        <h2>Backend failed to start</h2>
+      <div className="boot-screen boot-screen--error">
+        <div className="boot-screen__panel">
+          <span className="boot-screen__icon boot-screen__icon--error" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="8.5" />
+              <line x1="12" y1="8" x2="12" y2="13" />
+              <circle cx="12" cy="16" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
 
-        <p>
-          Could not start backend on port {portNumber}
-        </p>
+          <h1 className="boot-screen__title">Backend failed to start</h1>
 
-        <button onClick={() => getRandomPortNumber(setPortNumber)}>
-          Retry
-        </button>
+          <p className="boot-screen__message">
+            Could not start backend on port <span className="mono">{portNumber}</span>
+          </p>
+
+          <button className="btn btn--primary" onClick={() => getRandomPortNumber(setPortNumber)}>
+            <svg className="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M20 12a8 8 0 1 1-2.34-5.66" />
+              <path d="M20 4v5h-5" />
+            </svg>
+            <span>Retry</span>
+          </button>
+        </div>
       </div>
     );
   }
 
   // Backend is starting
   return (
-    <div>
-      <h2>Starting backend...</h2>
-      <p>Please wait...</p>
+    <div className="boot-screen">
+      <div className="boot-screen__panel">
+        <span className="boot-screen__spinner" aria-hidden="true"></span>
+        <h1 className="boot-screen__title">Starting backend...</h1>
+        <p className="boot-screen__message">Please wait...</p>
+      </div>
     </div>
   );
 }
@@ -126,7 +143,7 @@ function getRandomPortNumber(setPortNumber) {
 }
 
 
-async function waitForBackend(url, timeout = 20000) {
+async function waitForBackend(url, timeout = 60000) {
   const start = Date.now();
 
   while (Date.now() - start < timeout) {
@@ -140,7 +157,7 @@ async function waitForBackend(url, timeout = 20000) {
       // Backend isn't ready yet
     }
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
   }
 
   throw new Error("Backend did not become ready in time");

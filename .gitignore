@@ -1,0 +1,17 @@
+.env
+.python-version
+project-doc
+uv.lock
+
+application look/*
+
+testing_files/test_openai_compatible_api.py
+testing_files/__pycache__/*
+
+Personal Knowledge Hub/.vscode/*
+Personal Knowledge Hub/backend/__pycache__/*
+Personal Knowledge Hub/dist/*
+Personal Knowledge Hub/node_modules/*
+
+sampleData/*
+backend/vectorDB/vector_db

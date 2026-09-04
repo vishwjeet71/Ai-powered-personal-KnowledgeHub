@@ -50,8 +50,8 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item `
-            "Personal Knowledge Hub/backend/dist/backend.exe" `
-            "Personal Knowledge Hub/src-tauri/binaries/backend-x86_64-pc-windows-msvc.exe"
+            "backend/dist/backend.exe" `
+            "src-tauri/binaries/backend-x86_64-pc-windows-msvc.exe"
 
       - name: Build Tauri
         run: npm run tauri build

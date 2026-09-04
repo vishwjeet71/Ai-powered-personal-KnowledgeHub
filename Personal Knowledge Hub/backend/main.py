@@ -125,7 +125,11 @@ class UpdateDocument(BaseModel):
 
 @app.get("/load-models")
 async def loadModels(response: Response):
-    config_loc = user_config_dir(appname="com.vishwjeet.personal-knowledge-hub")
+    config_loc = user_config_dir(
+        appname="com.vishwjeet.personal-knowledge-hub",
+        appauthor=False,
+        roaming=True,  # Windows: %APPDATA%, Linux: ~/.config
+    )
     credentials_loc = os.path.join(config_loc, "secret.json")
 
     global chat_model, embedding_model, vectordb, ai_agent

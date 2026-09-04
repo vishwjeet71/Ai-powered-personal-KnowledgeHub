@@ -26,10 +26,11 @@ export default function KnowledgeBase() {
                     }
                 });
 
+                const page_content = await response.json();
+                const console_message = page_content.CM;
+                const user_message = page_content.UM;
+
                 if (response.ok) {
-                    const page_content = await response.json();
-                    const console_message = page_content.CM;
-                    const user_message = page_content.UM;
 
                     if (user_message?.constructor === Object) {
                         console.log(console_message);
@@ -46,6 +47,9 @@ export default function KnowledgeBase() {
                         setLoadMore(user_message.load_more);
 
                     } else {
+                        
+                        setUserDocuments([]);
+                        setLoadMore(false);
                         setStatusMessage(user_message);
                         console.log(console_message);
                     }

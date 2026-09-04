@@ -1,0 +1,63 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: "Personal Knowledge Hub"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: "Personal Knowledge Hub/package-lock.json"
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Install backend dependencies
+        working-directory: "Personal Knowledge Hub/backend"
+        run: uv sync
+
+      - name: Build Python sidecar
+        working-directory: "Personal Knowledge Hub/backend"
+        run: uv run pyinstaller --clean --onefile --name backend main.py
+
+      - name: Copy Windows sidecar
+        shell: pwsh
+        run: |
+          Copy-Item `
+            "Personal Knowledge Hub/backend/dist/backend.exe" `
+            "Personal Knowledge Hub/src-tauri/binaries/backend-x86_64-pc-windows-msvc.exe"
+
+      - name: Build Tauri
+        run: npm run tauri build
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-App
+          path: "Personal Knowledge Hub/src-tauri/target/release/bundle/nsis/*.exe"

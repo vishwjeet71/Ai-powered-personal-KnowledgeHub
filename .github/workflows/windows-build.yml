@@ -46,6 +46,7 @@ jobs:
       - name: Copy Windows sidecar
         shell: pwsh
         run: |
+          New-Item -ItemType Directory -Force -Path "Personal Knowledge Hub/src-tauri/binaries"
           Copy-Item `
             "Personal Knowledge Hub/backend/dist/backend.exe" `
             "Personal Knowledge Hub/src-tauri/binaries/backend-x86_64-pc-windows-msvc.exe"

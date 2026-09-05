@@ -1,5 +1,5 @@
 from platformdirs import user_config_dir
-import os, json
+import os, json, platform
 
 # moduls
 from llms.gemini import googleChatModel, googleEmbeddingModel
@@ -18,7 +18,19 @@ openai_default_embd_model = "text-embedding-3-small"  # temp name
 
 
 def load_models():
-    config_loc = user_config_dir(appname="com.vishwjeet.personal-knowledge-hub")
+
+    APP_NAME = "com.vishwjeet.personal-knowledge-hub"
+
+    if platform.system() == "Windows":
+            config_loc = os.path.join(os.environ["APPDATA"], APP_NAME)
+
+    else:
+         config_loc = user_config_dir(
+              appname="com.vishwjeet.personal-knowledge-hub",
+              appauthor=False,
+              roaming=True,
+        )
+
     credentials_loc = os.path.join(config_loc, "secret.json")
 
     if not os.path.exists(credentials_loc):

@@ -1,5 +1,5 @@
 from platformdirs import user_config_dir
-import os, logging, sys, uvicorn, signal
+import os, logging, sys, uvicorn, signal, platform
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, status, Response
@@ -125,11 +125,19 @@ class UpdateDocument(BaseModel):
 
 @app.get("/load-models")
 async def loadModels(response: Response):
-    config_loc = user_config_dir(
-        appname="com.vishwjeet.personal-knowledge-hub",
-        appauthor=False,
-        roaming=True,  # Windows: %APPDATA%, Linux: ~/.config
-    )
+
+    APP_NAME = "com.vishwjeet.personal-knowledge-hub"
+
+    if platform.system() == "Windows":
+        config_loc = os.path.join(os.environ["APPDATA"], APP_NAME)
+
+    else:
+        config_loc = user_config_dir(
+            appname="com.vishwjeet.personal-knowledge-hub",
+            appauthor=False,
+            roaming=True,  # Windows: %APPDATA%, Linux: ~/.config
+        )
+
     credentials_loc = os.path.join(config_loc, "secret.json")
 
     global chat_model, embedding_model, vectordb, ai_agent
@@ -178,10 +186,10 @@ async def loadModels(response: Response):
             "UM": "Backend Update successfully!",
         }
 
-    except FileExistsError as fee:
+    except FileNotFoundError as fnfe:
         response.status_code = status.HTTP_404_NOT_FOUND
         return {
-            "CM": f"Failed to load models because a required file already exists or could not be accessed correctly: {fee}",
+            "CM": f"Failed to load models because a required file already exists or could not be accessed correctly: {fnfe}",
             "UM": "Unable to load the AI models. Please check your configuration and try again.",
         }
     except ValueError as ve:

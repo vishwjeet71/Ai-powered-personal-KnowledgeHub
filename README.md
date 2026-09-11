@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="Personal Knowledge Hub/src-tauri/icons/Square107x107Logo.png" alt="App Logo" width="120">
+</p>
+
 # AI-Powered Personal Knowledge Hub
 
 This RAG application is designed to organize all your documents—such as PDFs, DOCX files, text files, and more—in one place. Whenever you need information, it retrieves the exact content you are looking for. This eliminates the burden of manually organizing files and reduces the time spent searching through documents.
